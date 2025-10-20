@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор бюджета</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="step1" class="step active">
+            <h2>💰 Калькулятор бюджета</h2>
+            <p>Введите желаемую месячную выручку (руб):</p>
+            <input type="number" id="revenue" placeholder="Например: 300000">
+            <button onclick="nextStep(2)">Далее</button>
+        </div>
+
+        <div id="step2" class="step">
+            <h2>📊 Средний чек</h2>
+            <p>Введите средний чек заказа (руб):</p>
+            <input type="number" id="averageOrder" placeholder="Например: 5000">
+            <button onclick="prevStep(1)">Назад</button>
+            <button onclick="calculate()">Рассчитать</button>
+        </div>
+
+        <div id="step3" class="step">
+            <h2>🎯 Результаты расчёта</h2>
+            <div id="results"></div>
+            <button onclick="restart()">Сделать новый расчёт</button>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
