@@ -38,7 +38,7 @@
             <button onclick="nextStep(2)" class="btn-primary">Далее →</button>
         </div>
         
-        <!-- Шаг 2: Средний чек и тип сайта -->
+        <!-- Шаг 2: Средний чек и ЧЕКБОКС -->
         <div id="step2" class="step">
             <h2>📊 Параметры бизнеса</h2>
             <p class="step-description">Уточним детали для точного расчёта</p>
@@ -49,14 +49,13 @@
                 <small class="hint" id="checkHint"></small>
             </div>
             
+            <!-- НОВОЕ: Чекбокс вместо выпадающего списка -->
             <div class="form-group">
-                <label for="siteType">🌐 Тип сайта:</label>
-                <select id="siteType" class="form-control">
-                    <option value="landing">📄 Лендинг (одностраничный сайт) — 40-90 тыс. ₽</option>
-                    <option value="multiPage">📑 Многостраничный сайт / Каталог — 90-180 тыс. ₽</option>
-                    <option value="ecommerce">🛒 Интернет-магазин — 150-350 тыс. ₽</option>
-                    <option value="portal">🏪 Портал / Маркетплейс — 350-800 тыс. ₽</option>
-                </select>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="needEcommerce" class="checkbox-modern">
+                    <span class="checkbox-text">🛒 Нужен интернет-магазин (продаю товары онлайн)</span>
+                </label>
+                <small class="hint" style="margin-top: 8px; display: block;">Если продаёте услуги или работы — оставьте пустым</small>
             </div>
             
             <div class="button-group">
@@ -73,6 +72,6 @@
         </div>
     </div>
     
-    <script src="app.js"></script>
+    <script src="app2.js"></script>
 </body>
 </html>
