@@ -4,9 +4,9 @@ let currentStep = 1;
 const NICHE_CONFIG = {
     ecommerce: {
         name: 'Интернет-магазин (товары)',
-        cpc: 25, // рублей за клик
-        conversion: 2.5, // %
-        ctr: 8.0, // %
+        cpc: 25,
+        conversion: 2.5,
+        ctr: 8.0,
         defaultCheck: 3500
     },
     services: {
@@ -91,8 +91,11 @@ function formatNumber(num) {
 // Показать шаг
 function showStep(step) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-    document.getElementById(`step${step}`).classList.add('active');
-    currentStep = step;
+    const stepElement = document.getElementById(`step${step}`);
+    if (stepElement) {
+        stepElement.classList.add('active');
+        currentStep = step;
+    }
 }
 
 // Следующий шаг
@@ -109,7 +112,9 @@ function prevStep(step) {
 
 // Валидация первого шага
 function validateStep1() {
-    const revenue = document.getElementById('revenue').value;
+    const revenueInput = document.getElementById('revenue');
+    const revenue = parseInt(revenueInput.value.replace(/[^\d]/g, ''));
+    
     if (!revenue || revenue < 1000) {
         alert('Укажите желаемую выручку (минимум 1 000 руб.)');
         return false;
@@ -121,31 +126,27 @@ function validateStep1() {
 function updateDefaultCheck() {
     const niche = document.getElementById('niche').value;
     const config = NICHE_CONFIG[niche];
+    const hintElement = document.getElementById('checkHint');
+    
     if (config) {
         const checkInput = document.getElementById('averageOrder');
         if (!checkInput.value) {
             checkInput.placeholder = `Например: ${formatMoney(config.defaultCheck)} руб.`;
+        }
+        if (hintElement) {
+            hintElement.textContent = `Рекомендуемый средний чек для этой ниши: ~${formatMoney(config.defaultCheck)} руб.`;
         }
     }
 }
 
 // Расчёт окупаемости сайта
 function calculateROI(sitePrice, monthlyAdBudget, revenue, averageOrder) {
-    const monthlyOrders = Math.ceil(revenue / averageOrder);
-    const avgOrderValue = averageOrder;
-    
-    // Предполагаемая маржинальность (усреднённо)
     const marginRate = 0.35; // 35% средняя маржинальность
-    
-    // Месячная прибыль до вычета рекламы
     const monthlyGrossProfit = revenue * marginRate;
-    
-    // Месячная прибыль после рекламы
     const monthlyNetProfit = monthlyGrossProfit - monthlyAdBudget;
     
-    // Окупаемость в месяцах
     const paybackMonths = monthlyNetProfit > 0 
-        ? Math.ceil(sitePrice / monthlyNetProfit * 10) / 10 
+        ? Math.round((sitePrice / monthlyNetProfit) * 10) / 10 
         : Infinity;
     
     return {
@@ -158,20 +159,24 @@ function calculateROI(sitePrice, monthlyAdBudget, revenue, averageOrder) {
 // Основной расчёт
 function calculate() {
     // Получение данных из формы
-    const revenue = parseInt(document.getElementById('revenue').value);
-    let averageOrder = parseInt(document.getElementById('averageOrder').value);
+    const revenueInput = document.getElementById('revenue');
+    const averageOrderInput = document.getElementById('averageOrder');
+    
+    const revenue = parseInt(revenueInput.value.replace(/[^\d]/g, ''));
+    let averageOrder = parseInt(averageOrderInput.value.replace(/[^\d]/g, ''));
+    
     const niche = document.getElementById('niche').value;
     const siteType = document.getElementById('siteType').value;
     
     // Применение дефолтного чека, если не указан
     if (!averageOrder || isNaN(averageOrder)) {
         averageOrder = NICHE_CONFIG[niche].defaultCheck;
-        document.getElementById('averageOrder').value = averageOrder;
+        averageOrderInput.value = averageOrder;
     }
     
     // Валидация
     if (!revenue || revenue < 1000) {
-        alert('Укажите желаемую выручку');
+        alert('Укажите желаемую выручку (минимум 1 000 руб.)');
         return;
     }
     
@@ -193,7 +198,7 @@ function calculate() {
     // Дополнительные метрики
     const averageCtr = config.ctr / 100;
     const impressionsNeeded = Math.ceil(visitorsNeeded / averageCtr);
-    const cpo = ordersNeeded > 0 ? Math.ceil(adBudget / ordersNeeded) : 0; // Cost Per Order
+    const cpo = ordersNeeded > 0 ? Math.ceil(adBudget / ordersNeeded) : 0;
     
     // Расчёт бюджета на сайт
     const siteConfig = SITE_OPTIONS[siteType];
@@ -209,7 +214,7 @@ function calculate() {
     const roi = calculateROI(siteBudget.avg, adBudget, revenue, averageOrder);
     
     // Генерация рекомендаций
-    const recommendations = generateRecommendations(conversionRate * 100, cpc, ordersNeeded, visitorsNeeded);
+    const recommendations = generateRecommendations(config.conversion, cpc, ordersNeeded, visitorsNeeded);
     
     displayResults({
         ordersNeeded,
@@ -222,7 +227,9 @@ function calculate() {
         impressionsNeeded,
         cpo,
         roi,
-        recommendations
+        recommendations,
+        revenue,
+        averageOrder
     });
     
     showStep(3);
@@ -273,45 +280,56 @@ function displayResults(data) {
         <div class="result-section">
             <h3>🎯 Целевые показатели для ниши "${data.niche}"</h3>
             <div class="result-item">
-                <strong>📦 Заказов в месяц:</strong> ${formatNumber(data.ordersNeeded)}
+                <strong>📦 Заказов в месяц:</strong>
+                <span>${formatNumber(data.ordersNeeded)}</span>
             </div>
             <div class="result-item">
-                <strong>👥 Посетителей в месяц:</strong> ${formatNumber(data.visitorsNeeded)}
+                <strong>👥 Посетителей в месяц:</strong>
+                <span>${formatNumber(data.visitorsNeeded)}</span>
             </div>
             <div class="result-item">
-                <strong>👁️ Показов рекламы:</strong> ${formatNumber(data.impressionsNeeded)}
+                <strong>👁️ Показов рекламы:</strong>
+                <span>${formatNumber(data.impressionsNeeded)}</span>
             </div>
         </div>
         
         <div class="result-section">
             <h3>💰 Рекламный бюджет (Яндекс.Директ)</h3>
             <div class="result-item highlight-blue">
-                <strong>Месячный бюджет:</strong> ${formatMoney(data.adBudget)} руб.
+                <strong>Месячный бюджет:</strong>
+                <span>${formatMoney(data.adBudget)} руб.</span>
             </div>
             <div class="result-item">
-                <strong>Средняя цена клика (CPC):</strong> ${data.cpc} руб.
+                <strong>Средняя цена клика (CPC):</strong>
+                <span>${data.cpc} руб.</span>
             </div>
             <div class="result-item">
-                <strong>Цена заказа (CPO):</strong> ${formatMoney(data.cpo)} руб.
+                <strong>Цена заказа (CPO):</strong>
+                <span>${formatMoney(data.cpo)} руб.</span>
             </div>
             <div class="result-item">
-                <strong>Прогнозная конверсия:</strong> ${data.conversion}%
+                <strong>Прогнозная конверсия:</strong>
+                <span>${data.conversion}%</span>
             </div>
         </div>
         
         <div class="result-section">
             <h3>💻 Инвестиции в сайт: ${data.siteBudget.name}</h3>
             <div class="result-item">
-                <strong>Бюджет разработки:</strong> ${formatMoney(data.siteBudget.min)} - ${formatMoney(data.siteBudget.max)} руб.
+                <strong>Бюджет разработки:</strong>
+                <span>${formatMoney(data.siteBudget.min)} - ${formatMoney(data.siteBudget.max)} руб.</span>
             </div>
             <div class="result-item">
-                <strong>Сроки разработки:</strong> ${data.siteBudget.timeToDevelop}
+                <strong>Сроки разработки:</strong>
+                <span>${data.siteBudget.timeToDevelop}</span>
             </div>
             <div class="result-item ${roiClass}">
-                <strong>📈 Окупаемость сайта:</strong> ${roiText}
+                <strong>📈 Окупаемость сайта:</strong>
+                <span>${roiText}</span>
             </div>
             <div class="result-item">
-                <strong>💵 Чистая прибыль/мес (после рекламы):</strong> ${formatMoney(Math.max(0, Math.floor(data.roi.monthlyNetProfit)))} руб.
+                <strong>💵 Чистая прибыль/мес:</strong>
+                <span>${formatMoney(Math.max(0, Math.floor(data.roi.monthlyNetProfit)))} руб.</span>
             </div>
         </div>
         
@@ -321,7 +339,7 @@ function displayResults(data) {
         </div>
         
         <div class="result-footer">
-            <small>* Расчёт основан на реальных показателях ниш в Яндекс.Директе (Q4 2025). Фактические значения могут отличаться на ±20%.</small>
+            <small>* Расчёт основан на реальных показателях ниш в Яндекс.Директе (2026). Фактические значения могут отличаться на ±20%.</small>
         </div>
     `;
 }
@@ -341,15 +359,20 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDefaultCheck();
     
     // Обработчик изменения ниши
-    document.getElementById('niche').addEventListener('change', updateDefaultCheck);
+    const nicheSelect = document.getElementById('niche');
+    if (nicheSelect) {
+        nicheSelect.addEventListener('change', updateDefaultCheck);
+    }
     
     // Валидация ввода чисел
     const numericInputs = ['revenue', 'averageOrder'];
     numericInputs.forEach(id => {
         const input = document.getElementById(id);
-        input.addEventListener('input', function() {
-            this.value = this.value.replace(/[^\d]/g, '');
-        });
+        if (input) {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^\d]/g, '');
+            });
+        }
     });
     
     // Telegram Web App
