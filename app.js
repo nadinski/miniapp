@@ -340,6 +340,7 @@ function displayResults(data) {
     const assessment = data.budgetAssessment;
     const topRec = assessment.topRecommendation;
     
+
     results.innerHTML = `
         <div class="result-section">
             <h3>🎯 Целевые показатели для ниши "${data.niche}"</h3>
@@ -377,8 +378,9 @@ function displayResults(data) {
             </div>
         </div>
         
+        <!-- ОБЪЕДИНЁННЫЙ БЛОК: Разумный бюджет + Детали выбранного сайта -->
         <div class="result-section assessment-block">
-            <h3>🏦 Разумный бюджет на разработку сайта</h3>
+            <h3>🏦 Разумный бюджет на разработку</h3>
             <div class="assessment-main">
                 <div class="assessment-value">
                     <span class="big-number">${formatMoney(assessment.optimalReasonable)} ₽</span>
@@ -393,8 +395,53 @@ function displayResults(data) {
                 </div>
             </div>
             
-            <div class="assessment-variants">
-                <div class="variant-title">Сравнение с вашим бюджетом:</div>
+            <!-- НОВЫЙ ПОДБЛОК: Анализ выбранного варианта -->
+            <div style="margin-top: 20px; background: #ffffff; border-radius: 18px; padding: 16px; border: 1px solid #f0e8df;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span style="font-size: 18px;">🔍</span>
+                    <span style="font-weight: 700; color: #1e1b2e; text-transform: uppercase; font-size: 13px;">Анализ выбранного варианта: ${data.siteBudget.name}</span>
+                </div>
+                
+                <div class="result-item">
+                    <strong>💰 Стоимость:</strong>
+                    <span>${formatMoney(data.siteBudget.min)} – ${formatMoney(data.siteBudget.max)} руб.</span>
+                </div>
+                <div class="result-item">
+                    <strong>⏳ Сроки запуска:</strong>
+                    <span>${data.siteBudget.timeToDevelop}</span>
+                </div>
+                <div class="result-item">
+                    <strong>📈 Окупаемость:</strong>
+                    <span class="${roiClass}">${roiText}</span>
+                </div>
+                <div class="result-item" style="border-bottom: none;">
+                    <strong>💵 Чистая прибыль после рекламы:</strong>
+                    <span><strong>${formatMoney(Math.max(0, Math.floor(data.roi.monthlyNetProfit)))} ₽/мес</strong></span>
+                </div>
+                
+                <!-- Вердикт по выбранному варианту -->
+                ${data.siteBudget.avg > assessment.maxReasonable ? `
+                <div class="assessment-warning" style="margin-top: 16px;">
+                    ⚠️ Выбранный вариант дороже разумного предела (${formatMoney(assessment.maxReasonable)} ₽). 
+                    Рекомендую рассмотреть "${topRec.name}".
+                </div>
+                ` : ''}
+                
+                ${data.siteBudget.avg < assessment.minReasonable ? `
+                <div class="assessment-tip" style="margin-top: 16px;">
+                    💪 Ваш бюджет позволяет взять сайт мощнее! Обратите внимание на "${topRec.name}".
+                </div>
+                ` : ''}
+                
+                ${data.siteBudget.avg >= assessment.minReasonable && data.siteBudget.avg <= assessment.maxReasonable ? `
+                <div class="assessment-tip" style="margin-top: 16px; background: #ecfdf5; color: #065f46; border-color: #a7f3d0;">
+                    ✅ Отличный выбор! Этот сайт идеально соответствует вашим текущим оборотам.
+                </div>
+                ` : ''}
+            </div>
+            
+            <div class="assessment-variants" style="margin-top: 20px;">
+                <div class="variant-title">Сравнение всех типов сайтов:</div>
                 ${Object.entries(assessment.assessments).map(([key, site]) => `
                     <div class="variant-row ${site.cssClass}">
                         <span class="variant-name">${site.name}</span>
@@ -402,39 +449,6 @@ function displayResults(data) {
                         <span class="variant-verdict">${site.verdict}</span>
                     </div>
                 `).join('')}
-            </div>
-            
-            ${data.siteBudget.avg > assessment.maxReasonable ? `
-            <div class="assessment-warning">
-                ⚠️ Выбранный вами "${data.siteBudget.name}" дороже разумного предела (${formatMoney(assessment.maxReasonable)} ₽). 
-                Рекомендую рассмотреть "${topRec.name}".
-            </div>
-            ` : ''}
-            
-            ${data.siteBudget.avg < assessment.minReasonable ? `
-            <div class="assessment-tip">
-                💪 Ваш бюджет позволяет взять сайт дороже! Рассмотрите "${topRec.name}".
-            </div>
-            ` : ''}
-        </div>
-        
-        <div class="result-section">
-            <h3>💻 Инвестиции в сайт: ${data.siteBudget.name}</h3>
-            <div class="result-item">
-                <strong>Бюджет разработки:</strong>
-                <span>${formatMoney(data.siteBudget.min)} - ${formatMoney(data.siteBudget.max)} руб.</span>
-            </div>
-            <div class="result-item">
-                <strong>Сроки разработки:</strong>
-                <span>${data.siteBudget.timeToDevelop}</span>
-            </div>
-            <div class="result-item ${roiClass}">
-                <strong>📈 Окупаемость сайта:</strong>
-                <span>${roiText}</span>
-            </div>
-            <div class="result-item">
-                <strong>💵 Чистая прибыль/мес:</strong>
-                <span>${formatMoney(Math.max(0, Math.floor(data.roi.monthlyNetProfit)))} руб.</span>
             </div>
         </div>
         
