@@ -78,13 +78,13 @@ const SITE_OPTIONS = {
     }
 };
 
-// Форматирование валюты с защитой от NaN и отрицательных значений
+// Форматирование валюты с защитой от NaN
 function formatMoney(amount) {
     if (isNaN(amount) || amount === null || amount === undefined) return '0';
     return Math.round(amount).toLocaleString('ru-RU');
 }
 
-// Форматирование числа
+// Форматирование числа с защитой от NaN
 function formatNumber(num) {
     if (isNaN(num) || num === null || num === undefined) return '0';
     return Math.round(num).toLocaleString('ru-RU');
@@ -170,16 +170,15 @@ function assessReasonableSiteBudget(revenue, averageOrder, adBudget) {
     let maxReasonable = Math.floor(revenue * 0.2);
     
     // Но не больше 6 месячных чистых прибылей (чтобы окупался за полгода)
-    // 🔧 ИСПРАВЛЕНИЕ: Защита от отрицательной прибыли
+    // ИСПРАВЛЕНИЕ: Защита от отрицательной прибыли
     let maxByProfit;
     if (monthlyNetProfit > 0) {
         maxByProfit = Math.floor(monthlyNetProfit * 6);
     } else {
-        // Если прибыль отрицательная, используем только процент от оборота
         maxByProfit = maxReasonable;
     }
     
-    // 🔧 ИСПРАВЛЕНИЕ: cappedMaxReasonable не может быть меньше minReasonable
+    // ИСПРАВЛЕНИЕ: cappedMaxReasonable не может быть меньше minReasonable
     let cappedMaxReasonable = Math.min(maxReasonable, maxByProfit);
     cappedMaxReasonable = Math.max(cappedMaxReasonable, minReasonable);
     
@@ -247,7 +246,7 @@ function calculate() {
     const niche = document.getElementById('niche').value;
     const siteType = document.getElementById('siteType').value;
     
-    // 🔧 ИСПРАВЛЕНИЕ: Проверка на NaN
+    // ИСПРАВЛЕНИЕ: Проверка на NaN
     if (!averageOrder || isNaN(averageOrder)) {
         averageOrder = NICHE_CONFIG[niche].defaultCheck;
         averageOrderInput.value = averageOrder;
@@ -274,7 +273,7 @@ function calculate() {
     const averageCtr = config.ctr / 100;
     const impressionsNeeded = Math.ceil(visitorsNeeded / averageCtr);
     
-    // 🔧 ИСПРАВЛЕНИЕ: Защита от деления на ноль
+    // ИСПРАВЛЕНИЕ: Защита от деления на ноль
     const cpo = ordersNeeded > 0 ? Math.ceil(adBudget / ordersNeeded) : 0;
     
     const siteConfig = SITE_OPTIONS[siteType];
@@ -355,7 +354,7 @@ function displayResults(data) {
     const assessment = data.budgetAssessment;
     const topRec = assessment.topRecommendation;
     
-    // 🔧 ИСПРАВЛЕНИЕ: Корректное отображение прибыли (включая отрицательную)
+    // ИСПРАВЛЕНИЕ: Корректное отображение прибыли (включая отрицательную)
     const netProfit = Math.floor(data.roi.monthlyNetProfit);
     const netProfitDisplay = netProfit >= 0 
         ? formatMoney(netProfit)
