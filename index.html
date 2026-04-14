@@ -13,6 +13,17 @@
             <h2>💰 Калькулятор бюджета</h2>
             <p>Введите желаемую месячную выручку (руб):</p>
             <input type="number" id="revenue" placeholder="Например: 300000">
+            <div class="form-group">
+    <label>Ниша бизнеса:</label>
+    <select id="niche" class="form-control">
+        <option value="ecommerce">Интернет-магазин</option>
+        <option value="services">Услуги B2C</option>
+        <option value="b2b">B2B продажи</option>
+        <option value="development">Разработка / IT</option>
+        <option value="medicine">Медицина</option>
+        <option value="realestate">Недвижимость</option>
+    </select>
+</div>
             <button onclick="nextStep(2)">Далее</button>
         </div>
 
@@ -20,6 +31,15 @@
             <h2>📊 Средний чек</h2>
             <p>Введите средний чек заказа (руб):</p>
             <input type="number" id="averageOrder" placeholder="Например: 5000">
+            <div class="form-group">
+    <label>Тип сайта:</label>
+    <select id="siteType" class="form-control">
+        <option value="landing">Лендинг</option>
+        <option value="multiPage">Многостраничный сайт</option>
+        <option value="ecommerce">Интернет-магазин</option>
+        <option value="portal">Портал / Маркетплейс</option>
+    </select>
+</div>
             <button onclick="prevStep(1)">Назад</button>
             <button onclick="calculate()">Рассчитать</button>
         </div>
