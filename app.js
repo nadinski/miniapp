@@ -156,51 +156,73 @@ function calculateROI(sitePrice, monthlyAdBudget, revenue, averageOrder) {
     };
 }
 
-// НОВАЯ ФУНКЦИЯ: Оценка разумного бюджета на сайт исходя из фин. модели
+// Оценка разумного бюджета на сайт исходя из оборота
 function assessReasonableSiteBudget(revenue, averageOrder, adBudget) {
     const marginRate = 0.35;
     const monthlyGrossProfit = revenue * marginRate;
     const monthlyNetProfit = monthlyGrossProfit - adBudget;
     
-    // Максимальный срок окупаемости, который считается разумным (мес)
-    const GOOD_PAYBACK = 6; 
-    const ACCEPTABLE_PAYBACK = 10;
+    // Разумный бюджет на сайт: 10-20% от месячного оборота
+    const minReasonable = Math.floor(revenue * 0.1);
+    const optimalReasonable = Math.floor(revenue * 0.15);
+    const maxReasonable = Math.floor(revenue * 0.2);
     
-    // Сколько максимум можно потратить на сайт при этих прибылях
-    const maxGoodBudget = Math.floor(monthlyNetProfit * GOOD_PAYBACK);
-    const maxAcceptableBudget = Math.floor(monthlyNetProfit * ACCEPTABLE_PAYBACK);
+    // Но не больше 6 месячных чистых прибылей (чтобы окупался за полгода)
+    const maxByProfit = Math.floor(monthlyNetProfit * 6);
+    const cappedMaxReasonable = Math.min(maxReasonable, maxByProfit);
     
-    // Оценка каждого типа сайта для текущей ситуации
+    // Оценка каждого типа сайта относительно разумного бюджета
     const siteAssessments = {};
     for (let key in SITE_OPTIONS) {
         const site = SITE_OPTIONS[key];
-        const paybackGood = site.avgPrice / monthlyNetProfit;
-        const paybackMax = site.maxPrice / monthlyNetProfit;
+        const paybackMonths = monthlyNetProfit > 0 
+            ? Math.round((site.avgPrice / monthlyNetProfit) * 10) / 10 
+            : Infinity;
         
         let verdict = '';
         let cssClass = '';
         
-        if (paybackGood <= GOOD_PAYBACK) {
-            verdict = '✅ Отличный выбор для вашего бюджета';
-            cssClass = 'verdict-good';
-        } else if (paybackGood <= ACCEPTABLE_PAYBACK) {
-            verdict = '👍 Разумные инвестиции';
-            cssClass = 'verdict-ok';
-        } else if (paybackMax <= ACCEPTABLE_PAYBACK * 1.5) {
-            verdict = '⚠️ Можно рассмотреть, но срок окупаемости увеличен';
-            cssClass = 'verdict-warning';
+        if (site.avgPrice < minReasonable) {
+            verdict = `🟢 Можно дороже — ваш бюджет позволяет до ${formatMoney(cappedMaxReasonable)} ₽`;
+            cssClass = 'verdict-cheap';
+        } else if (site.avgPrice >= minReasonable && site.avgPrice <= cappedMaxReasonable) {
+            verdict = `✅ Оптимально для вашего оборота`;
+            cssClass = 'verdict-optimal';
+        } else if (site.avgPrice <= cappedMaxReasonable * 1.3) {
+            verdict = `⚠️ Дороговато, окупится за ${paybackMonths} мес.`;
+            cssClass = 'verdict-expensive';
         } else {
-            verdict = '❌ Сейчас нецелесообразно. Сначала нарастите оборот';
-            cssClass = 'verdict-bad';
+            verdict = `❌ Неразумно дорого для оборота ${formatMoney(revenue)} ₽/мес`;
+            cssClass = 'verdict-too-expensive';
         }
         
         siteAssessments[key] = {
             ...site,
-            paybackMonths: Math.round(paybackGood * 10) / 10,
+            paybackMonths,
             verdict,
             cssClass
         };
     }
+    
+    // Находим оптимальный тип сайта (тот, что попадает в коридор)
+    let recommendationKey = 'landing';
+    for (let key in siteAssessments) {
+        const a = siteAssessments[key];
+        if (a.avgPrice >= minReasonable && a.avgPrice <= cappedMaxReasonable) {
+            recommendationKey = key;
+            break;
+        }
+    }
+    
+    return {
+        monthlyNetProfit,
+        minReasonable,
+        optimalReasonable,
+        maxReasonable: cappedMaxReasonable,
+        assessments: siteAssessments,
+        topRecommendation: siteAssessments[recommendationKey]
+    };
+}
     
     // Рекомендация одного, самого подходящего варианта
     let recommendationKey = 'landing';
@@ -360,6 +382,48 @@ function displayResults(data) {
     const topRec = assessment.topRecommendation;
     const selectedSite = SITE_OPTIONS[data.selectedSiteType];
     const isSelectedTooExpensive = assessment.maxAcceptableBudget < selectedSite.minPrice;
+
+            <!-- НОВЫЙ БЛОК: Разумный бюджет на сайт -->
+        <div class="result-section assessment-block">
+            <h3>🏦 Разумный бюджет на разработку сайта</h3>
+            <div class="assessment-main">
+                <div class="assessment-value">
+                    <span class="big-number">${formatMoney(assessment.optimalReasonable)} ₽</span>
+                    <span class="assessment-label">— оптимальные инвестиции</span>
+                </div>
+                <div class="assessment-range">
+                    💰 Разумный коридор: <strong>${formatMoney(assessment.minReasonable)} – ${formatMoney(assessment.maxReasonable)} ₽</strong>
+                    <span class="range-hint">(10-20% от месячного оборота)</span>
+                </div>
+                <div class="assessment-note">
+                    💡 При обороте <strong>${formatMoney(data.revenue)} ₽/мес</strong> и чистой прибыли <strong>${formatMoney(Math.max(0, Math.floor(assessment.monthlyNetProfit)))} ₽/мес</strong>
+                </div>
+            </div>
+            
+            <div class="assessment-variants">
+                <div class="variant-title">Сравнение с вашим бюджетом:</div>
+                ${Object.entries(assessment.assessments).map(([key, site]) => `
+                    <div class="variant-row ${site.cssClass}">
+                        <span class="variant-name">${site.name}</span>
+                        <span class="variant-price">${formatMoney(site.minPrice)} – ${formatMoney(site.maxPrice)} ₽</span>
+                        <span class="variant-verdict">${site.verdict}</span>
+                    </div>
+                `).join('')}
+            </div>
+            
+            ${data.siteBudget.avg > assessment.maxReasonable ? `
+            <div class="assessment-warning">
+                ⚠️ Выбранный вами "${data.siteBudget.name}" дороже разумного предела (${formatMoney(assessment.maxReasonable)} ₽). 
+                Рекомендую рассмотреть "${assessment.topRecommendation.name}".
+            </div>
+            ` : ''}
+            
+            ${data.siteBudget.avg < assessment.minReasonable ? `
+            <div class="assessment-tip">
+                💪 Ваш бюджет позволяет взять сайт дороже! Рассмотрите "${assessment.topRecommendation.name}".
+            </div>
+            ` : ''}
+        </div>
     
     results.innerHTML = `
         <div class="result-section">
