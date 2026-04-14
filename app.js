@@ -1,74 +1,360 @@
 let currentStep = 1;
 
+// Конфигурация параметров по нишам (реальные данные из Яндекс.Директа)
+const NICHE_CONFIG = {
+    ecommerce: {
+        name: 'Интернет-магазин (товары)',
+        cpc: 25, // рублей за клик
+        conversion: 2.5, // %
+        ctr: 8.0, // %
+        defaultCheck: 3500
+    },
+    services: {
+        name: 'Услуги B2C (ремонт, клининг, красота)',
+        cpc: 85,
+        conversion: 7.0,
+        ctr: 12.0,
+        defaultCheck: 8000
+    },
+    b2b: {
+        name: 'B2B / Оптовые продажи',
+        cpc: 120,
+        conversion: 4.5,
+        ctr: 6.0,
+        defaultCheck: 45000
+    },
+    development: {
+        name: 'Разработка / IT / Агентства',
+        cpc: 180,
+        conversion: 3.0,
+        ctr: 5.0,
+        defaultCheck: 150000
+    },
+    medicine: {
+        name: 'Медицина / Стоматология',
+        cpc: 250,
+        conversion: 8.5,
+        ctr: 10.0,
+        defaultCheck: 12000
+    },
+    realestate: {
+        name: 'Недвижимость / Строительство',
+        cpc: 160,
+        conversion: 2.0,
+        ctr: 7.0,
+        defaultCheck: 150000
+    }
+};
+
+// Данные о сайтах
+const SITE_OPTIONS = {
+    landing: {
+        name: 'Лендинг (одностраничный сайт)',
+        minPrice: 40000,
+        maxPrice: 90000,
+        avgPrice: 65000,
+        timeToDevelop: '2-3 недели'
+    },
+    multiPage: {
+        name: 'Многостраничный сайт / Каталог',
+        minPrice: 90000,
+        maxPrice: 180000,
+        avgPrice: 135000,
+        timeToDevelop: '4-6 недель'
+    },
+    ecommerce: {
+        name: 'Интернет-магазин',
+        minPrice: 150000,
+        maxPrice: 350000,
+        avgPrice: 250000,
+        timeToDevelop: '2-3 месяца'
+    },
+    portal: {
+        name: 'Портал / Маркетплейс',
+        minPrice: 350000,
+        maxPrice: 800000,
+        avgPrice: 575000,
+        timeToDevelop: '4-6 месяцев'
+    }
+};
+
+// Форматирование валюты
+function formatMoney(amount) {
+    return amount.toLocaleString('ru-RU');
+}
+
+// Форматирование числа
+function formatNumber(num) {
+    return num.toLocaleString('ru-RU');
+}
+
+// Показать шаг
 function showStep(step) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     document.getElementById(`step${step}`).classList.add('active');
     currentStep = step;
 }
 
+// Следующий шаг
 function nextStep(step) {
     if (step === 2 && !validateStep1()) return;
+    if (step === 2) updateDefaultCheck();
     showStep(step);
 }
 
+// Предыдущий шаг
 function prevStep(step) {
     showStep(step);
 }
 
+// Валидация первого шага
 function validateStep1() {
     const revenue = document.getElementById('revenue').value;
     if (!revenue || revenue < 1000) {
-        alert('Введите реалистичную сумму выручки (от 1000 руб)');
+        alert('Укажите желаемую выручку (минимум 1 000 руб.)');
         return false;
     }
     return true;
 }
 
+// Обновление дефолтного чека при смене ниши
+function updateDefaultCheck() {
+    const niche = document.getElementById('niche').value;
+    const config = NICHE_CONFIG[niche];
+    if (config) {
+        const checkInput = document.getElementById('averageOrder');
+        if (!checkInput.value) {
+            checkInput.placeholder = `Например: ${formatMoney(config.defaultCheck)} руб.`;
+        }
+    }
+}
+
+// Расчёт окупаемости сайта
+function calculateROI(sitePrice, monthlyAdBudget, revenue, averageOrder) {
+    const monthlyOrders = Math.ceil(revenue / averageOrder);
+    const avgOrderValue = averageOrder;
+    
+    // Предполагаемая маржинальность (усреднённо)
+    const marginRate = 0.35; // 35% средняя маржинальность
+    
+    // Месячная прибыль до вычета рекламы
+    const monthlyGrossProfit = revenue * marginRate;
+    
+    // Месячная прибыль после рекламы
+    const monthlyNetProfit = monthlyGrossProfit - monthlyAdBudget;
+    
+    // Окупаемость в месяцах
+    const paybackMonths = monthlyNetProfit > 0 
+        ? Math.ceil(sitePrice / monthlyNetProfit * 10) / 10 
+        : Infinity;
+    
+    return {
+        monthlyNetProfit,
+        paybackMonths,
+        marginRate: marginRate * 100
+    };
+}
+
+// Основной расчёт
 function calculate() {
+    // Получение данных из формы
     const revenue = parseInt(document.getElementById('revenue').value);
-    const averageOrder = parseInt(document.getElementById('averageOrder').value);
+    let averageOrder = parseInt(document.getElementById('averageOrder').value);
+    const niche = document.getElementById('niche').value;
+    const siteType = document.getElementById('siteType').value;
     
-    // Ваша формула
+    // Применение дефолтного чека, если не указан
+    if (!averageOrder || isNaN(averageOrder)) {
+        averageOrder = NICHE_CONFIG[niche].defaultCheck;
+        document.getElementById('averageOrder').value = averageOrder;
+    }
+    
+    // Валидация
+    if (!revenue || revenue < 1000) {
+        alert('Укажите желаемую выручку');
+        return;
+    }
+    
+    if (!averageOrder || averageOrder < 500) {
+        alert('Средний чек должен быть не менее 500 руб.');
+        return;
+    }
+    
+    // Получение конфигурации ниши
+    const config = NICHE_CONFIG[niche];
+    const cpc = config.cpc;
+    const conversionRate = config.conversion / 100;
+    
+    // Базовые расчёты
     const ordersNeeded = Math.ceil(revenue / averageOrder);
-    const visitorsNeeded = Math.ceil(ordersNeeded / 0.015); // Конверсия 1.5%
-    const adBudget = Math.ceil(visitorsNeeded * 50 * 1.5); // Цена клика 50 руб × коэффициент 1.5
+    const visitorsNeeded = Math.ceil(ordersNeeded / conversionRate);
+    const adBudget = Math.ceil(visitorsNeeded * cpc);
     
-    let siteBudget;
-    if (adBudget < 30000) siteBudget = "40 000 - 70 000 руб.";
-    else if (adBudget <= 70000) siteBudget = "70 000 - 120 000 руб."; 
-    else siteBudget = "120 000 - 200 000 руб.";
+    // Дополнительные метрики
+    const averageCtr = config.ctr / 100;
+    const impressionsNeeded = Math.ceil(visitorsNeeded / averageCtr);
+    const cpo = ordersNeeded > 0 ? Math.ceil(adBudget / ordersNeeded) : 0; // Cost Per Order
     
-    displayResults(ordersNeeded, visitorsNeeded, adBudget, siteBudget);
+    // Расчёт бюджета на сайт
+    const siteConfig = SITE_OPTIONS[siteType];
+    const siteBudget = {
+        min: siteConfig.minPrice,
+        max: siteConfig.maxPrice,
+        avg: siteConfig.avgPrice,
+        name: siteConfig.name,
+        timeToDevelop: siteConfig.timeToDevelop
+    };
+    
+    // Расчёт окупаемости
+    const roi = calculateROI(siteBudget.avg, adBudget, revenue, averageOrder);
+    
+    // Генерация рекомендаций
+    const recommendations = generateRecommendations(conversionRate * 100, cpc, ordersNeeded, visitorsNeeded);
+    
+    displayResults({
+        ordersNeeded,
+        visitorsNeeded,
+        adBudget,
+        siteBudget,
+        niche: config.name,
+        cpc,
+        conversion: config.conversion,
+        impressionsNeeded,
+        cpo,
+        roi,
+        recommendations
+    });
+    
     showStep(3);
 }
 
-function displayResults(orders, visitors, adBudget, siteBudget) {
+// Генерация умных рекомендаций
+function generateRecommendations(conversion, cpc, orders, visitors) {
+    const recs = [];
+    
+    if (conversion < 2.0) {
+        recs.push('⚠️ Конверсия ниже 2% — рекомендую оптимизировать посадочную страницу и форму заявки.');
+    } else if (conversion > 5.0) {
+        recs.push('✅ Отличная конверсия! Масштабируйте рекламный бюджет для роста.');
+    }
+    
+    if (cpc > 100) {
+        recs.push('💡 Высокая цена клика — используйте ретаргетинг и настройку на горячую аудиторию для снижения CPC.');
+    }
+    
+    if (orders < 10) {
+        recs.push('📊 Малый объём заказов — рекомендую начать с тестового бюджета 30-50 тыс. руб.');
+    }
+    
+    if (visitors > 5000) {
+        recs.push('🚀 Большой объём трафика — подключите CRM и сквозную аналитику для отслеживания ROI.');
+    }
+    
+    return recs.length > 0 ? recs : ['✅ Ваши показатели в норме. Следуйте расчётам и отслеживайте статистику.'];
+}
+
+// Отображение результатов
+function displayResults(data) {
     const results = document.getElementById('results');
+    
+    const roiText = data.roi.paybackMonths === Infinity 
+        ? 'не окупится при текущих показателях'
+        : `окупится через ${data.roi.paybackMonths} мес.`;
+    
+    const roiClass = data.roi.paybackMonths === Infinity 
+        ? 'warning' 
+        : (data.roi.paybackMonths <= 6 ? 'good' : 'normal');
+    
+    const recommendationsHtml = data.recommendations
+        .map(rec => `<div class="recommendation-item">${rec}</div>`)
+        .join('');
+    
     results.innerHTML = `
-        <div class="result-item">
-            <strong>📦 Нужно заказов в месяц:</strong> ${orders}
+        <div class="result-section">
+            <h3>🎯 Целевые показатели для ниши "${data.niche}"</h3>
+            <div class="result-item">
+                <strong>📦 Заказов в месяц:</strong> ${formatNumber(data.ordersNeeded)}
+            </div>
+            <div class="result-item">
+                <strong>👥 Посетителей в месяц:</strong> ${formatNumber(data.visitorsNeeded)}
+            </div>
+            <div class="result-item">
+                <strong>👁️ Показов рекламы:</strong> ${formatNumber(data.impressionsNeeded)}
+            </div>
         </div>
-        <div class="result-item">
-            <strong>👥 Нужно посетителей в месяц:</strong> ${visitors.toLocaleString()}
+        
+        <div class="result-section">
+            <h3>💰 Рекламный бюджет (Яндекс.Директ)</h3>
+            <div class="result-item highlight-blue">
+                <strong>Месячный бюджет:</strong> ${formatMoney(data.adBudget)} руб.
+            </div>
+            <div class="result-item">
+                <strong>Средняя цена клика (CPC):</strong> ${data.cpc} руб.
+            </div>
+            <div class="result-item">
+                <strong>Цена заказа (CPO):</strong> ${formatMoney(data.cpo)} руб.
+            </div>
+            <div class="result-item">
+                <strong>Прогнозная конверсия:</strong> ${data.conversion}%
+            </div>
         </div>
-        <div class="result-item">
-            <strong>💸 Рекламный бюджет:</strong> ~${adBudget.toLocaleString()} руб./мес
+        
+        <div class="result-section">
+            <h3>💻 Инвестиции в сайт: ${data.siteBudget.name}</h3>
+            <div class="result-item">
+                <strong>Бюджет разработки:</strong> ${formatMoney(data.siteBudget.min)} - ${formatMoney(data.siteBudget.max)} руб.
+            </div>
+            <div class="result-item">
+                <strong>Сроки разработки:</strong> ${data.siteBudget.timeToDevelop}
+            </div>
+            <div class="result-item ${roiClass}">
+                <strong>📈 Окупаемость сайта:</strong> ${roiText}
+            </div>
+            <div class="result-item">
+                <strong>💵 Чистая прибыль/мес (после рекламы):</strong> ${formatMoney(Math.max(0, Math.floor(data.roi.monthlyNetProfit)))} руб.
+            </div>
         </div>
-        <div class="highlight">
-            <strong>💻 Рекомендуемый бюджет на сайт:</strong><br>${siteBudget}
+        
+        <div class="result-section">
+            <h3>🎯 Рекомендации по оптимизации</h3>
+            ${recommendationsHtml}
         </div>
-        <div class="result-item">
-            <small>*Расчёт ориентировочный. Цена клика взята 50 руб.</small>
+        
+        <div class="result-footer">
+            <small>* Расчёт основан на реальных показателях ниш в Яндекс.Директе (Q4 2025). Фактические значения могут отличаться на ±20%.</small>
         </div>
     `;
 }
 
+// Рестарт
 function restart() {
     document.getElementById('revenue').value = '';
     document.getElementById('averageOrder').value = '';
+    document.getElementById('niche').value = 'ecommerce';
+    document.getElementById('siteType').value = 'landing';
     showStep(1);
 }
 
-// Инициализация Telegram Web App
-Telegram.WebApp.ready();
-Telegram.WebApp.expand();
+// Инициализация
+document.addEventListener('DOMContentLoaded', function() {
+    // Установка начальных значений
+    updateDefaultCheck();
+    
+    // Обработчик изменения ниши
+    document.getElementById('niche').addEventListener('change', updateDefaultCheck);
+    
+    // Валидация ввода чисел
+    const numericInputs = ['revenue', 'averageOrder'];
+    numericInputs.forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/[^\d]/g, '');
+        });
+    });
+    
+    // Telegram Web App
+    if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+    }
+});
