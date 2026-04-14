@@ -1,6 +1,6 @@
 let currentStep = 1;
 
-// Конфигурация параметров по нишам (реальные данные из Яндекс.Директа)
+// ==================== КОНФИГУРАЦИЯ НИШ (реальные данные Яндекс.Директ) ====================
 const NICHE_CONFIG = {
     ecommerce: {
         name: 'Интернет-магазин (товары)',
@@ -46,7 +46,7 @@ const NICHE_CONFIG = {
     }
 };
 
-// Данные о сайтах (расширенная версия с подпиской и апгрейдами)
+// ==================== ТИПЫ РЕШЕНИЙ (цены +20% к верхней границе) ====================
 const SITE_OPTIONS = {
     subscription: {
         name: 'Лендинг по подписке',
@@ -54,70 +54,81 @@ const SITE_OPTIONS = {
         maxPrice: 5000,
         avgPrice: 5000,
         timeToDevelop: '3-5 дней',
-        description: 'Аренда с правом выкупа. Минимальные вложения для старта.',
-        isSubscription: true
+        description: 'Аренда сайта с правом выкупа. Минимальные вложения для старта, идеально для теста ниши.',
+        isSubscription: true,
+        tier: 'subscription'
+    },
+    simpleEcommerce: {
+        name: 'Упрощённый интернет-магазин',
+        minPrice: 40000,
+        maxPrice: 100000,
+        avgPrice: 70000,
+        timeToDevelop: '1-2 недели',
+        description: 'Шаблонное решение для старта онлайн-продаж. Корзина, каталог, приём платежей — всё необходимое для первых заказов.',
+        isSubscription: false,
+        tier: 'simple'
     },
     landing: {
         name: 'Лендинг (одностраничный сайт)',
         minPrice: 40000,
-        maxPrice: 90000,
-        avgPrice: 65000,
+        maxPrice: 110000,
+        avgPrice: 75000,
         timeToDevelop: '2-3 недели',
-        description: 'Идеально для услуг и быстрого старта.'
+        description: 'Продающая страница для услуг. Высокая конверсия, быстрый запуск, идеально для привлечения заявок.',
+        isSubscription: false,
+        tier: 'landing'
     },
     multiPage: {
         name: 'Многостраничный сайт / Каталог',
-        minPrice: 90000,
-        maxPrice: 180000,
-        avgPrice: 135000,
+        minPrice: 120000,
+        maxPrice: 220000,
+        avgPrice: 170000,
         timeToDevelop: '4-6 недель',
-        description: 'Для компаний с портфолио и большим количеством услуг.'
-    },
-    simpleEcommerce: {
-        name: 'Упрощённый интернет-магазин',
-        minPrice: 60000,
-        maxPrice: 90000,
-        avgPrice: 75000,
-        timeToDevelop: '1-2 недели',
-        description: 'Шаблонное решение для старта продаж. Базовый функционал, быстрый запуск.'
+        description: 'Сайт с портфолио, услугами и блогом. Формирует доверие и экспертность, работает на SEO.',
+        isSubscription: false,
+        tier: 'multi'
     },
     ecommerce: {
         name: 'Интернет-магазин',
-        minPrice: 150000,
-        maxPrice: 350000,
-        avgPrice: 250000,
+        minPrice: 180000,
+        maxPrice: 420000,
+        avgPrice: 300000,
         timeToDevelop: '2-3 месяца',
-        description: 'Полноценный магазин с корзиной, личным кабинетом и интеграциями.'
-    },
-    ecommercePlus: {
-        name: 'Интернет-магазин + Мобильное приложение',
-        minPrice: 500000,
-        maxPrice: 1200000,
-        avgPrice: 850000,
-        timeToDevelop: '3-5 месяцев',
-        description: 'Для оборотов от 1 млн ₽/мес. Полноценная экосистема с приложением.'
+        description: 'Полноценный магазин: корзина, личный кабинет, интеграции с CRM и службами доставки, система скидок.',
+        isSubscription: false,
+        tier: 'ecommerce'
     },
     portal: {
         name: 'Портал / Маркетплейс',
         minPrice: 350000,
-        maxPrice: 800000,
-        avgPrice: 575000,
+        maxPrice: 960000,
+        avgPrice: 650000,
         timeToDevelop: '4-6 месяцев',
-        description: 'Сложные решения с большим функционалом и интеграциями.'
+        description: 'Сложная экосистема: личные кабинеты продавцов и покупателей, рейтинги, сложная логика и интеграции.',
+        isSubscription: false,
+        tier: 'portal'
+    },
+    ecommercePlus: {
+        name: 'Интернет-магазин + Мобильное приложение',
+        minPrice: 600000,
+        maxPrice: 1500000,
+        avgPrice: 1050000,
+        timeToDevelop: '4-6 месяцев',
+        description: 'Максимальный охват: веб-версия + нативное приложение iOS/Android. Для оборотов от 1 млн ₽/мес.',
+        isSubscription: false,
+        tier: 'plus'
     }
 };
 
-// Форматирование валюты
+// ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
 function formatMoney(amount) {
     return amount.toLocaleString('ru-RU');
 }
 
-// Форматирование числа
 function formatNumber(num) {
     return num.toLocaleString('ru-RU');
 }
 
-// Показать шаг
 function showStep(step) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     const stepElement = document.getElementById(`step${step}`);
@@ -127,23 +138,19 @@ function showStep(step) {
     }
 }
 
-// Следующий шаг
 function nextStep(step) {
     if (step === 2 && !validateStep1()) return;
     if (step === 2) updateDefaultCheck();
     showStep(step);
 }
 
-// Предыдущий шаг
 function prevStep(step) {
     showStep(step);
 }
 
-// Валидация первого шага
 function validateStep1() {
     const revenueInput = document.getElementById('revenue');
     const revenue = parseInt(revenueInput.value.replace(/[^\d]/g, ''));
-    
     if (!revenue || revenue < 1000) {
         alert('Укажите желаемую выручку (минимум 1 000 руб.)');
         return false;
@@ -151,25 +158,23 @@ function validateStep1() {
     return true;
 }
 
-// Обновление дефолтного чека при смене ниши
 function updateDefaultCheck() {
     const niche = document.getElementById('niche').value;
     const config = NICHE_CONFIG[niche];
     const hintElement = document.getElementById('checkHint');
-    
     if (config) {
         const checkInput = document.getElementById('averageOrder');
         if (!checkInput.value) {
             checkInput.placeholder = `Например: ${formatMoney(config.defaultCheck)} руб.`;
         }
         if (hintElement) {
-            hintElement.textContent = `Рекомендуемый средний чек для этой ниши: ~${formatMoney(config.defaultCheck)} руб.`;
+            hintElement.textContent = `Рекомендуемый средний чек: ~${formatMoney(config.defaultCheck)} руб.`;
         }
     }
 }
 
-// Расчёт окупаемости сайта
-function calculateROI(sitePrice, monthlyAdBudget, revenue, averageOrder) {
+// ==================== РАСЧЁТ ОКУПАЕМОСТИ ====================
+function calculateROI(sitePrice, monthlyAdBudget, revenue) {
     const marginRate = 0.35;
     const monthlyGrossProfit = revenue * marginRate;
     const monthlyNetProfit = monthlyGrossProfit - monthlyAdBudget;
@@ -179,117 +184,110 @@ function calculateROI(sitePrice, monthlyAdBudget, revenue, averageOrder) {
         : Infinity;
     
     return {
+        monthlyGrossProfit,
         monthlyNetProfit,
         paybackMonths,
         marginRate: marginRate * 100
     };
 }
 
-// Оценка разумного бюджета на сайт исходя из оборота
-function assessReasonableSiteBudget(revenue, averageOrder, adBudget) {
-    const marginRate = 0.35;
-    const monthlyGrossProfit = revenue * marginRate;
-    const monthlyNetProfit = monthlyGrossProfit - adBudget;
-    
-    // Разумный бюджет на сайт: 10-20% от месячного оборота
-    const minReasonable = Math.floor(revenue * 0.1);
-    const optimalReasonable = Math.floor(revenue * 0.15);
-    const maxReasonable = Math.floor(revenue * 0.2);
-    
-    // ИСПРАВЛЕНИЕ №1: Защита от отрицательной прибыли
-    let maxByProfit;
-    if (monthlyNetProfit > 0) {
-        maxByProfit = Math.floor(monthlyNetProfit * 6);
-    } else {
-        maxByProfit = maxReasonable; // Если прибыли нет, ориентируемся только на оборот
+// ==================== УМНАЯ РЕКОМЕНДАЦИЯ РЕШЕНИЯ ====================
+function recommendSiteType(reasonableBudget, needEcommerce) {
+    // Если бюджет меньше 20 000 — всегда подписка
+    if (reasonableBudget <= 20000) {
+        return 'subscription';
     }
     
-    let cappedMaxReasonable = Math.min(maxReasonable, maxByProfit);
-    // Дополнительная защита: capped не может быть меньше min
-    cappedMaxReasonable = Math.max(cappedMaxReasonable, minReasonable);
-    
-    // Оценка каждого типа сайта относительно разумного бюджета
-    const siteAssessments = {};
-    for (let key in SITE_OPTIONS) {
-        const site = SITE_OPTIONS[key];
-        const paybackMonths = monthlyNetProfit > 0 
-            ? Math.round((site.avgPrice / monthlyNetProfit) * 10) / 10 
-            : Infinity;
-        
-        let verdict = '';
-        let cssClass = '';
-        
-        if (site.avgPrice < minReasonable) {
-            verdict = `🟢 Можно дороже — ваш бюджет позволяет до ${formatMoney(cappedMaxReasonable)} ₽`;
-            cssClass = 'verdict-cheap';
-        } else if (site.avgPrice >= minReasonable && site.avgPrice <= cappedMaxReasonable) {
-            verdict = `✅ Оптимально для вашего оборота`;
-            cssClass = 'verdict-optimal';
-        } else if (site.avgPrice <= cappedMaxReasonable * 1.3) {
-            verdict = `⚠️ Дороговато, окупится за ${paybackMonths} мес.`;
-            cssClass = 'verdict-expensive';
-        } else {
-            verdict = `❌ Неразумно дорого для оборота ${formatMoney(revenue)} ₽/мес`;
-            cssClass = 'verdict-too-expensive';
-        }
-        
-        siteAssessments[key] = {
-            ...site,
-            paybackMonths,
-            verdict,
-            cssClass
-        };
+    // Бюджет 20 000 – 120 000 ₽
+    if (reasonableBudget > 20000 && reasonableBudget <= 120000) {
+        return needEcommerce ? 'simpleEcommerce' : 'landing';
     }
     
-    // Находим оптимальный тип сайта
-    let recommendationKey = 'landing';
-    for (let key in siteAssessments) {
-        const a = siteAssessments[key];
-        if (a.avgPrice >= minReasonable && a.avgPrice <= cappedMaxReasonable) {
-            recommendationKey = key;
-            break;
-        }
+    // Бюджет 120 000 – 500 000 ₽
+    if (reasonableBudget > 120000 && reasonableBudget <= 500000) {
+        return needEcommerce ? 'ecommerce' : 'multiPage';
     }
     
-    return {
-        monthlyNetProfit,
-        minReasonable,
-        optimalReasonable,
-        maxReasonable: cappedMaxReasonable,
-        assessments: siteAssessments,
-        topRecommendation: siteAssessments[recommendationKey]
-    };
+    // Бюджет > 500 000 ₽
+    return needEcommerce ? 'ecommercePlus' : 'portal';
 }
 
-// Умный подбор типа сайта на основе оборота и потребности в магазине
-function recommendSiteType(revenue, needEcommerce) {
-    const monthlyRevenue = revenue;
+// ==================== ПОЛУЧЕНИЕ АЛЬТЕРНАТИВ ====================
+function getAlternatives(recommendedKey, needEcommerce, reasonableBudget) {
+    const alternatives = [];
     
-    // Если нужен магазин
-    if (needEcommerce) {
-        if (monthlyRevenue < 150000) {
-            return 'simpleEcommerce'; // Упрощённый магазин
-        } else if (monthlyRevenue < 500000) {
-            return 'ecommerce'; // Обычный магазин
-        } else {
-            return 'ecommercePlus'; // Магазин + приложение
-        }
+    // Вариант дешевле
+    if (recommendedKey === 'landing' && reasonableBudget > 20000) {
+        alternatives.push(SITE_OPTIONS.subscription);
+    } else if (recommendedKey === 'multiPage') {
+        alternatives.push(SITE_OPTIONS.landing);
+    } else if (recommendedKey === 'ecommerce') {
+        alternatives.push(SITE_OPTIONS.simpleEcommerce);
+    } else if (recommendedKey === 'portal') {
+        alternatives.push(SITE_OPTIONS.multiPage);
+    } else if (recommendedKey === 'ecommercePlus') {
+        alternatives.push(SITE_OPTIONS.ecommerce);
     }
     
-    // ИСПРАВЛЕНИЕ №3: Реалистичные пороги для услуг
-    if (monthlyRevenue < 60000) {
-        return 'subscription'; // Подписка
-    } else if (monthlyRevenue < 150000) {
-        return 'landing'; // Лендинг
-    } else if (monthlyRevenue < 400000) {
-        return 'multiPage'; // Многостраничник
-    } else {
-        return 'portal'; // Портал
+    // Вариант дороже (если есть куда расти)
+    if (recommendedKey === 'subscription') {
+        alternatives.push(needEcommerce ? SITE_OPTIONS.simpleEcommerce : SITE_OPTIONS.landing);
+    } else if (recommendedKey === 'simpleEcommerce') {
+        alternatives.push(SITE_OPTIONS.ecommerce);
+    } else if (recommendedKey === 'landing') {
+        alternatives.push(SITE_OPTIONS.multiPage);
+    } else if (recommendedKey === 'multiPage') {
+        alternatives.push(SITE_OPTIONS.portal);
+    } else if (recommendedKey === 'ecommerce') {
+        alternatives.push(SITE_OPTIONS.ecommercePlus);
     }
+    
+    return alternatives.slice(0, 2); // Максимум 2 альтернативы
 }
 
-// Основной расчёт
+// ==================== ГЕНЕРАЦИЯ РЕКОМЕНДАЦИЙ ПО ОПТИМИЗАЦИИ ====================
+function generateOptimizationTips(conversion, cpc, orders, visitors, monthlyNetProfit, adBudget, revenue) {
+    const tips = [];
+    
+    // Конверсия
+    if (conversion < 2.0) {
+        tips.push('⚠️ Конверсия ниже 2% — оптимизируйте посадочную страницу, форму заявки и оффер.');
+    } else if (conversion > 5.0) {
+        tips.push('✅ Отличная конверсия! Увеличивайте рекламный бюджет для масштабирования.');
+    }
+    
+    // CPC
+    if (cpc > 100) {
+        tips.push('💡 Высокая цена клика — используйте ретаргетинг, минус-слова и настройку на горячую аудиторию.');
+    }
+    
+    // Количество заказов
+    if (orders < 10) {
+        tips.push('📊 Малый объём заказов — начните с тестового бюджета 30-50 тыс. руб. для сбора статистики.');
+    }
+    
+    // Трафик
+    if (visitors > 5000) {
+        tips.push('🚀 Большой трафик — подключите CRM и сквозную аналитику для точного отслеживания ROI.');
+    }
+    
+    // Прибыльность рекламы
+    if (monthlyNetProfit <= 0) {
+        tips.push('🔴 Реклама не окупается — пересмотрите связку "ниша-чек-конверсия" или оптимизируйте кампании.');
+    }
+    
+    // Реклама съедает больше 50% валовой прибыли
+    const grossProfit = revenue * 0.35;
+    if (adBudget > grossProfit * 0.5) {
+        tips.push('⚠️ Рекламный бюджет превышает 50% валовой прибыли — высокий риск. Оптимизируйте CPC и конверсию.');
+    }
+    
+    return tips.length > 0 ? tips : ['✅ Все показатели в норме. Следуйте расчётам и масштабируйтесь.'];
+}
+
+// ==================== ОСНОВНОЙ РАСЧЁТ ====================
 function calculate() {
+    // Получение данных
     const revenueInput = document.getElementById('revenue');
     const averageOrderInput = document.getElementById('averageOrder');
     const needEcommerceCheckbox = document.getElementById('needEcommerce');
@@ -297,24 +295,25 @@ function calculate() {
     const revenue = parseInt(revenueInput.value.replace(/[^\d]/g, ''));
     let averageOrder = parseInt(averageOrderInput.value.replace(/[^\d]/g, ''));
     const needEcommerce = needEcommerceCheckbox ? needEcommerceCheckbox.checked : false;
-    
     const niche = document.getElementById('niche').value;
     
+    // Подстановка дефолтного чека
     if (!averageOrder || isNaN(averageOrder)) {
         averageOrder = NICHE_CONFIG[niche].defaultCheck;
         averageOrderInput.value = averageOrder;
     }
     
+    // Валидация
     if (!revenue || revenue < 1000) {
         alert('Укажите желаемую выручку (минимум 1 000 руб.)');
         return;
     }
-    
     if (!averageOrder || averageOrder < 500) {
         alert('Средний чек должен быть не менее 500 руб.');
         return;
     }
     
+    // Расчёты
     const config = NICHE_CONFIG[niche];
     const cpc = config.cpc;
     const conversionRate = config.conversion / 100;
@@ -327,103 +326,116 @@ function calculate() {
     const impressionsNeeded = Math.ceil(visitorsNeeded / averageCtr);
     const cpo = ordersNeeded > 0 ? Math.ceil(adBudget / ordersNeeded) : 0;
     
-    // Расчёт разумного бюджета
-    const budgetAssessment = assessReasonableSiteBudget(revenue, averageOrder, adBudget);
+    // Разумный бюджет
+    const minReasonable = Math.floor(revenue * 0.1);
+    const optimalReasonable = Math.floor(revenue * 0.15);
+    const maxReasonable = Math.floor(revenue * 0.2);
     
-    // УМНАЯ РЕКОМЕНДАЦИЯ
-    const recommendedSiteKey = recommendSiteType(revenue, needEcommerce);
+    // Умная рекомендация
+    const recommendedKey = recommendSiteType(optimalReasonable, needEcommerce);
+    const recommendedSite = SITE_OPTIONS[recommendedKey];
     
-    const siteConfig = SITE_OPTIONS[recommendedSiteKey];
-    const siteBudget = {
-        min: siteConfig.minPrice,
-        max: siteConfig.maxPrice,
-        avg: siteConfig.avgPrice,
-        name: siteConfig.name,
-        timeToDevelop: siteConfig.timeToDevelop,
-        description: siteConfig.description || '',
-        isSubscription: siteConfig.isSubscription || false,
-        recommendedKey: recommendedSiteKey
-    };
+    // Расчёт ROI
+    const roi = calculateROI(recommendedSite.avgPrice, adBudget, revenue);
     
-    const roi = calculateROI(siteBudget.avg, adBudget, revenue, averageOrder);
-    const recommendations = generateRecommendations(config.conversion, cpc, ordersNeeded, visitorsNeeded);
+    // Альтернативы
+    const alternatives = getAlternatives(recommendedKey, needEcommerce, optimalReasonable);
     
+    // Рекомендации по оптимизации
+    const optimizationTips = generateOptimizationTips(
+        config.conversion, cpc, ordersNeeded, visitorsNeeded, 
+        roi.monthlyNetProfit, adBudget, revenue
+    );
+    
+    // Отображение
     displayResults({
         ordersNeeded,
         visitorsNeeded,
-        adBudget,
-        siteBudget,
-        niche: config.name,
-        cpc,
-        conversion: config.conversion,
         impressionsNeeded,
+        adBudget,
+        cpc,
         cpo,
-        roi,
-        recommendations,
+        conversion: config.conversion,
+        niche: config.name,
         revenue,
         averageOrder,
-        budgetAssessment,
         needEcommerce,
-        recommendedSiteKey
+        minReasonable,
+        optimalReasonable,
+        maxReasonable,
+        recommendedSite,
+        roi,
+        alternatives,
+        optimizationTips
     });
     
     showStep(3);
 }
 
-// Генерация умных рекомендаций
-function generateRecommendations(conversion, cpc, orders, visitors) {
-    const recs = [];
-    
-    if (conversion < 2.0) {
-        recs.push('⚠️ Конверсия ниже 2% — рекомендую оптимизировать посадочную страницу и форму заявки.');
-    } else if (conversion > 5.0) {
-        recs.push('✅ Отличная конверсия! Масштабируйте рекламный бюджет для роста.');
-    }
-    
-    if (cpc > 100) {
-        recs.push('💡 Высокая цена клика — используйте ретаргетинг и настройку на горячую аудиторию для снижения CPC.');
-    }
-    
-    if (orders < 10) {
-        recs.push('📊 Малый объём заказов — рекомендую начать с тестового бюджета 30-50 тыс. руб.');
-    }
-    
-    if (visitors > 5000) {
-        recs.push('🚀 Большой объём трафика — подключите CRM и сквозную аналитику для отслеживания ROI.');
-    }
-    
-    return recs.length > 0 ? recs : ['✅ Ваши показатели в норме. Следуйте расчётам и отслеживайте статистику.'];
-}
-
-// Отображение результатов
+// ==================== ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ====================
 function displayResults(data) {
     const results = document.getElementById('results');
     
+    const hasProfit = data.roi.monthlyNetProfit > 0;
+    const netProfitDisplay = hasProfit 
+        ? formatMoney(Math.floor(data.roi.monthlyNetProfit))
+        : `-${formatMoney(Math.abs(Math.floor(data.roi.monthlyNetProfit)))}`;
+    
     const roiText = data.roi.paybackMonths === Infinity 
-        ? 'не окупится при текущих показателях'
-        : `окупится через ${data.roi.paybackMonths} мес.`;
+        ? 'не окупится' 
+        : `${data.roi.paybackMonths} мес.`;
     
-    const roiClass = data.roi.paybackMonths === Infinity 
-        ? 'warning' 
-        : (data.roi.paybackMonths <= 6 ? 'good' : 'normal');
-    
-    const recommendationsHtml = data.recommendations
-        .map(rec => `<div class="recommendation-item">${rec}</div>`)
+    const optimizationHtml = data.optimizationTips
+        .map(tip => `<div class="recommendation-item">${tip}</div>`)
         .join('');
-
-    const assessment = data.budgetAssessment;
-    const netProfitValue = Math.floor(data.roi.monthlyNetProfit);
-    const netProfitDisplay = netProfitValue >= 0 ? formatMoney(netProfitValue) : `-${formatMoney(Math.abs(netProfitValue))}`;
+    
+    const alternativesHtml = data.alternatives.length > 0 ? `
+        <div class="assessment-variants" style="margin-top: 20px;">
+            <div class="variant-title">Альтернативные варианты:</div>
+            ${data.alternatives.map(site => `
+                <div class="variant-row">
+                    <span class="variant-name">${site.name}</span>
+                    <span class="variant-price">${formatMoney(site.minPrice)} – ${formatMoney(site.maxPrice)} ₽</span>
+                    <span class="variant-verdict">${site.avgPrice < data.recommendedSite.avgPrice ? '🟢 Эконом-вариант' : '🔴 Премиум-решение'}</span>
+                </div>
+            `).join('')}
+        </div>
+    ` : '';
+    
+    // Красный флаг при отрицательной прибыли
+    const redFlagHtml = !hasProfit ? `
+        <div class="result-section" style="background: #FEF2F2; border-left: 4px solid #E5484D;">
+            <h3 style="color: #991B1B;">🚨 Требуется корректировка показателей</h3>
+            <div style="padding: 12px 0;">
+                <p style="font-size: 14px; color: #7F1D1D; margin-bottom: 12px; font-weight: 500;">
+                    При текущих данных рекламный бюджет (${formatMoney(data.adBudget)} ₽) превышает валовую прибыль (${formatMoney(Math.floor(data.roi.monthlyGrossProfit))} ₽).
+                </p>
+                <p style="font-size: 13px; color: #991B1B; margin-bottom: 16px;">
+                    Мы <strong>не рекомендуем</strong> вкладывать деньги в разработку сайта, пока бизнес-модель не скорректирована.
+                </p>
+                <div style="background: #FFFFFF; border-radius: 12px; padding: 14px;">
+                    <div style="font-weight: 700; margin-bottom: 8px; color: #1E1B2E;">Что можно сделать:</div>
+                    <ul style="padding-left: 20px; color: #4A5568; font-size: 13px; line-height: 1.8;">
+                        <li>Увеличить средний чек (сейчас ${formatMoney(data.averageOrder)} ₽)</li>
+                        <li>Повысить конверсию сайта (сейчас ${data.conversion}%)</li>
+                        <li>Снизить цену клика — пересмотреть нишу или настройки рекламы</li>
+                        <li>Скорректировать цель по выручке</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    ` : '';
     
     results.innerHTML = `
+        <!-- Блок 1: Целевые показатели -->
         <div class="result-section">
-            <h3>🎯 Целевые показатели для ниши "${data.niche}"</h3>
+            <h3>🎯 Целевые показатели — ${data.niche}</h3>
             <div class="result-item">
                 <strong>📦 Заказов в месяц:</strong>
                 <span>${formatNumber(data.ordersNeeded)}</span>
             </div>
             <div class="result-item">
-                <strong>👥 Посетителей в месяц:</strong>
+                <strong>👥 Посетителей:</strong>
                 <span>${formatNumber(data.visitorsNeeded)}</span>
             </div>
             <div class="result-item">
@@ -432,6 +444,7 @@ function displayResults(data) {
             </div>
         </div>
         
+        <!-- Блок 2: Рекламный бюджет -->
         <div class="result-section">
             <h3>💰 Рекламный бюджет (Яндекс.Директ)</h3>
             <div class="result-item highlight-blue">
@@ -452,97 +465,86 @@ function displayResults(data) {
             </div>
         </div>
         
+        ${redFlagHtml}
+        
+        <!-- Блок 3: Разумный бюджет + Рекомендация -->
         <div class="result-section assessment-block">
-            <h3>🏦 ${data.siteBudget.isSubscription ? 'Стартовое решение' : 'Разумный бюджет на разработку'}</h3>
+            <h3>${hasProfit ? '🏦 Разумный бюджет на разработку' : '📊 Анализ бюджета'}</h3>
             <div class="assessment-main">
                 <div class="assessment-value">
-                    <span class="big-number">${formatMoney(data.siteBudget.isSubscription ? data.siteBudget.avg : assessment.optimalReasonable)} ₽</span>
-                    <span class="assessment-label">— ${data.siteBudget.isSubscription ? 'в месяц' : 'оптимальные инвестиции'}</span>
+                    <span class="big-number">${formatMoney(data.optimalReasonable)} ₽</span>
+                    <span class="assessment-label">— оптимальные инвестиции</span>
                 </div>
                 
-                <!-- ИСПРАВЛЕНИЕ №2: Исправлены цвета блоков для темной темы -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0;">
-                    <div style="background: #1C1C26; padding: 10px; border-radius: 12px; border: 1px solid rgba(196, 160, 85, 0.1);">
-                        <div style="font-size: 11px; color: #6B6B7F; text-transform: uppercase;">Окупаемость</div>
-                        <div style="font-size: 20px; font-weight: 800; color: #EDEDF0;">${data.roi.paybackMonths === Infinity ? '—' : data.roi.paybackMonths + ' мес.'}</div>
+                    <div style="background: #F8FAFC; padding: 10px; border-radius: 12px;">
+                        <div style="font-size: 11px; color: #64748B; text-transform: uppercase;">Окупаемость</div>
+                        <div style="font-size: 20px; font-weight: 800; color: #1E1B2E;">${roiText}</div>
                     </div>
-                    <div style="background: #1C1C26; padding: 10px; border-radius: 12px; border: 1px solid rgba(196, 160, 85, 0.1);">
-                        <div style="font-size: 11px; color: #6B6B7F; text-transform: uppercase;">Чистая прибыль</div>
-                        <div style="font-size: 20px; font-weight: 800; color: ${netProfitValue >= 0 ? '#46A758' : '#E5484D'};">${netProfitDisplay} ₽</div>
+                    <div style="background: #F8FAFC; padding: 10px; border-radius: 12px;">
+                        <div style="font-size: 11px; color: #64748B; text-transform: uppercase;">Чистая прибыль</div>
+                        <div style="font-size: 20px; font-weight: 800; color: ${hasProfit ? '#059669' : '#E5484D'};">${netProfitDisplay} ₽</div>
                     </div>
                 </div>
                 
-                ${!data.siteBudget.isSubscription ? `
                 <div class="assessment-range">
-                    💰 Разумный коридор: <strong>${formatMoney(assessment.minReasonable)} – ${formatMoney(assessment.maxReasonable)} ₽</strong>
-                    <span class="range-hint">(10-20% от месячного оборота)</span>
-                </div>
-                ` : ''}
-                
-                <div class="assessment-note">
-                    ${data.siteBudget.isSubscription ? 
-                        `💡 Стартовое решение для оборота ${formatMoney(data.revenue)} ₽/мес. Аренда сайта с правом выкупа.` :
-                        `💡 При обороте <strong>${formatMoney(data.revenue)} ₽/мес</strong> и чистой прибыли <strong>${netProfitDisplay} ₽/мес</strong>`
-                    }
+                    💰 Разумный коридор: <strong>${formatMoney(data.minReasonable)} – ${formatMoney(data.maxReasonable)} ₽</strong>
+                    <span class="range-hint">(10-20% от месячного оборота ${formatMoney(data.revenue)} ₽)</span>
                 </div>
             </div>
             
-            <div style="margin-top: 20px; background: #1C1C26; border-radius: 18px; padding: 16px; border: 1px solid rgba(196, 160, 85, 0.15);">
+            ${hasProfit ? `
+            <!-- Блок 4: Рекомендованное решение -->
+            <div style="margin-top: 20px; background: #FFFFFF; border-radius: 18px; padding: 16px; border: 1px solid #F0E8DF;">
                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                    <span style="font-size: 18px;">🎯</span>
-                    <span style="font-weight: 700; color: #EDEDF0; text-transform: uppercase; font-size: 13px;">Рекомендованное решение</span>
+                    <span style="font-size: 18px;">🏆</span>
+                    <span style="font-weight: 700; color: #1E1B2E; text-transform: uppercase; font-size: 13px;">Рекомендованное решение</span>
                 </div>
                 
-                <div style="background: linear-gradient(135deg, rgba(109, 58, 255, 0.05) 0%, rgba(255, 158, 44, 0.05) 100%); padding: 12px; border-radius: 14px; margin-bottom: 12px;">
-                    <div style="font-size: 18px; font-weight: 800; color: #EDEDF0; margin-bottom: 4px;">${data.siteBudget.name}</div>
-                    <div style="font-size: 13px; color: #A1A1B0;">${data.siteBudget.description}</div>
+                <div style="background: linear-gradient(135deg, #6D3AFF08 0%, #FF9E2C08 100%); padding: 14px; border-radius: 14px; margin-bottom: 12px;">
+                    <div style="font-size: 20px; font-weight: 800; color: #1E1B2E; margin-bottom: 6px;">${data.recommendedSite.name}</div>
+                    <div style="font-size: 14px; color: #64748B; line-height: 1.5;">${data.recommendedSite.description}</div>
                 </div>
                 
                 <div class="result-item">
-                    <strong>💰 Стоимость:</strong>
-                    <span>${data.siteBudget.isSubscription ? formatMoney(data.siteBudget.avg) + ' ₽/мес' : formatMoney(data.siteBudget.min) + ' – ' + formatMoney(data.siteBudget.max) + ' ₽'}</span>
+                    <strong>💰 Инвестиции:</strong>
+                    <span>${data.recommendedSite.isSubscription ? formatMoney(data.recommendedSite.avgPrice) + ' ₽/мес' : formatMoney(data.recommendedSite.minPrice) + ' – ' + formatMoney(data.recommendedSite.maxPrice) + ' ₽'}</span>
                 </div>
                 <div class="result-item">
-                    <strong>⏳ Сроки запуска:</strong>
-                    <span>${data.siteBudget.timeToDevelop}</span>
+                    <strong>⏳ Срок запуска:</strong>
+                    <span>${data.recommendedSite.timeToDevelop}</span>
                 </div>
                 <div class="result-item">
                     <strong>📈 Окупаемость:</strong>
-                    <span class="${roiClass}">${roiText}</span>
+                    <span>${roiText}</span>
                 </div>
-                <div class="result-item" style="border-bottom: none;">
+                <div class="result-item" style="border-bottom: none; margin-bottom: 12px;">
                     <strong>💵 Чистая прибыль после рекламы:</strong>
                     <span><strong>${netProfitDisplay} ₽/мес</strong></span>
                 </div>
+                
+                <a href="https://t.me/nadyaborse" target="_blank" style="display: block; text-align: center; background: #FF9E2C; color: #FFFBF5; padding: 14px; border-radius: 40px; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 14px; margin-top: 8px;">
+                    Хочу такой сайт →
+                </a>
             </div>
+            ` : ''}
             
-            <div class="assessment-variants" style="margin-top: 20px;">
-                <div class="variant-title">Альтернативные варианты:</div>
-                ${Object.entries(assessment.assessments)
-                    .filter(([key]) => key !== data.recommendedSiteKey && key !== 'subscription')
-                    .slice(0, 3)
-                    .map(([key, site]) => `
-                    <div class="variant-row ${site.cssClass}">
-                        <span class="variant-name">${site.name}</span>
-                        <span class="variant-price">${formatMoney(site.minPrice)} – ${formatMoney(site.maxPrice)} ₽</span>
-                        <span class="variant-verdict">${site.verdict}</span>
-                    </div>
-                `).join('')}
-            </div>
+            ${alternativesHtml}
         </div>
         
+        <!-- Блок 5: Рекомендации по оптимизации -->
         <div class="result-section">
             <h3>🎯 Рекомендации по оптимизации</h3>
-            ${recommendationsHtml}
+            ${optimizationHtml}
         </div>
         
         <div class="result-footer">
-            <small>* Расчёт основан на реальных показателях ниш в Яндекс.Директе (2026). Фактические значения могут отличаться на ±20%.</small>
+            <small>* Расчёт на основе реальных данных Яндекс.Директ (2026). Отклонения ±20%.</small>
         </div>
     `;
 }
 
-// Рестарт
+// ==================== РЕСТАРТ ====================
 function restart() {
     document.getElementById('revenue').value = '';
     document.getElementById('averageOrder').value = '';
@@ -554,7 +556,7 @@ function restart() {
     showStep(1);
 }
 
-// Инициализация
+// ==================== ИНИЦИАЛИЗАЦИЯ ====================
 document.addEventListener('DOMContentLoaded', function() {
     updateDefaultCheck();
     
