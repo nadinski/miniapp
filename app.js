@@ -141,7 +141,7 @@ function updateDefaultCheck() {
 
 // Расчёт окупаемости сайта
 function calculateROI(sitePrice, monthlyAdBudget, revenue, averageOrder) {
-    const marginRate = 0.35; // 35% средняя маржинальность
+    const marginRate = 0.35;
     const monthlyGrossProfit = revenue * marginRate;
     const monthlyNetProfit = monthlyGrossProfit - monthlyAdBudget;
     
@@ -223,38 +223,9 @@ function assessReasonableSiteBudget(revenue, averageOrder, adBudget) {
         topRecommendation: siteAssessments[recommendationKey]
     };
 }
-    
-    // Рекомендация одного, самого подходящего варианта
-    let recommendationKey = 'landing';
-    let bestVerdictScore = -1;
-    
-    for (let key in siteAssessments) {
-        const a = siteAssessments[key];
-        let score = 0;
-        if (a.cssClass === 'verdict-good') score = 3;
-        else if (a.cssClass === 'verdict-ok') score = 2;
-        else if (a.cssClass === 'verdict-warning') score = 1;
-        
-        // При равных оценках выбираем тот, что дороже
-        if (score > bestVerdictScore || (score === bestVerdictScore && a.avgPrice > siteAssessments[recommendationKey].avgPrice)) {
-            bestVerdictScore = score;
-            recommendationKey = key;
-        }
-    }
-    
-    return {
-        monthlyNetProfit,
-        maxGoodBudget,
-        maxAcceptableBudget,
-        assessments: siteAssessments,
-        topRecommendation: siteAssessments[recommendationKey],
-        topKey: recommendationKey
-    };
-}
 
 // Основной расчёт
 function calculate() {
-    // Получение данных из формы
     const revenueInput = document.getElementById('revenue');
     const averageOrderInput = document.getElementById('averageOrder');
     
@@ -264,13 +235,11 @@ function calculate() {
     const niche = document.getElementById('niche').value;
     const siteType = document.getElementById('siteType').value;
     
-    // Применение дефолтного чека, если не указан
     if (!averageOrder || isNaN(averageOrder)) {
         averageOrder = NICHE_CONFIG[niche].defaultCheck;
         averageOrderInput.value = averageOrder;
     }
     
-    // Валидация
     if (!revenue || revenue < 1000) {
         alert('Укажите желаемую выручку (минимум 1 000 руб.)');
         return;
@@ -281,22 +250,18 @@ function calculate() {
         return;
     }
     
-    // Получение конфигурации ниши
     const config = NICHE_CONFIG[niche];
     const cpc = config.cpc;
     const conversionRate = config.conversion / 100;
     
-    // Базовые расчёты
     const ordersNeeded = Math.ceil(revenue / averageOrder);
     const visitorsNeeded = Math.ceil(ordersNeeded / conversionRate);
     const adBudget = Math.ceil(visitorsNeeded * cpc);
     
-    // Дополнительные метрики
     const averageCtr = config.ctr / 100;
     const impressionsNeeded = Math.ceil(visitorsNeeded / averageCtr);
     const cpo = ordersNeeded > 0 ? Math.ceil(adBudget / ordersNeeded) : 0;
     
-    // Расчёт бюджета на сайт
     const siteConfig = SITE_OPTIONS[siteType];
     const siteBudget = {
         min: siteConfig.minPrice,
@@ -306,13 +271,8 @@ function calculate() {
         timeToDevelop: siteConfig.timeToDevelop
     };
     
-    // Расчёт окупаемости
     const roi = calculateROI(siteBudget.avg, adBudget, revenue, averageOrder);
-    
-    // НОВОЕ: Расчёт разумного бюджета
     const budgetAssessment = assessReasonableSiteBudget(revenue, averageOrder, adBudget);
-    
-    // Генерация рекомендаций
     const recommendations = generateRecommendations(config.conversion, cpc, ordersNeeded, visitorsNeeded);
     
     displayResults({
@@ -329,8 +289,8 @@ function calculate() {
         recommendations,
         revenue,
         averageOrder,
-        budgetAssessment, // Передаём новую оценку
-        selectedSiteType: siteType // Передаём выбранный тип для сравнения
+        budgetAssessment,
+        selectedSiteType: siteType
     });
     
     showStep(3);
@@ -377,53 +337,8 @@ function displayResults(data) {
         .map(rec => `<div class="recommendation-item">${rec}</div>`)
         .join('');
 
-    // Данные для блока разумного бюджета
     const assessment = data.budgetAssessment;
     const topRec = assessment.topRecommendation;
-    const selectedSite = SITE_OPTIONS[data.selectedSiteType];
-    const isSelectedTooExpensive = assessment.maxAcceptableBudget < selectedSite.minPrice;
-
-            <!-- НОВЫЙ БЛОК: Разумный бюджет на сайт -->
-        <div class="result-section assessment-block">
-            <h3>🏦 Разумный бюджет на разработку сайта</h3>
-            <div class="assessment-main">
-                <div class="assessment-value">
-                    <span class="big-number">${formatMoney(assessment.optimalReasonable)} ₽</span>
-                    <span class="assessment-label">— оптимальные инвестиции</span>
-                </div>
-                <div class="assessment-range">
-                    💰 Разумный коридор: <strong>${formatMoney(assessment.minReasonable)} – ${formatMoney(assessment.maxReasonable)} ₽</strong>
-                    <span class="range-hint">(10-20% от месячного оборота)</span>
-                </div>
-                <div class="assessment-note">
-                    💡 При обороте <strong>${formatMoney(data.revenue)} ₽/мес</strong> и чистой прибыли <strong>${formatMoney(Math.max(0, Math.floor(assessment.monthlyNetProfit)))} ₽/мес</strong>
-                </div>
-            </div>
-            
-            <div class="assessment-variants">
-                <div class="variant-title">Сравнение с вашим бюджетом:</div>
-                ${Object.entries(assessment.assessments).map(([key, site]) => `
-                    <div class="variant-row ${site.cssClass}">
-                        <span class="variant-name">${site.name}</span>
-                        <span class="variant-price">${formatMoney(site.minPrice)} – ${formatMoney(site.maxPrice)} ₽</span>
-                        <span class="variant-verdict">${site.verdict}</span>
-                    </div>
-                `).join('')}
-            </div>
-            
-            ${data.siteBudget.avg > assessment.maxReasonable ? `
-            <div class="assessment-warning">
-                ⚠️ Выбранный вами "${data.siteBudget.name}" дороже разумного предела (${formatMoney(assessment.maxReasonable)} ₽). 
-                Рекомендую рассмотреть "${assessment.topRecommendation.name}".
-            </div>
-            ` : ''}
-            
-            ${data.siteBudget.avg < assessment.minReasonable ? `
-            <div class="assessment-tip">
-                💪 Ваш бюджет позволяет взять сайт дороже! Рассмотрите "${assessment.topRecommendation.name}".
-            </div>
-            ` : ''}
-        </div>
     
     results.innerHTML = `
         <div class="result-section">
@@ -462,25 +377,24 @@ function displayResults(data) {
             </div>
         </div>
         
-        <!-- НОВЫЙ БЛОК: Разумный бюджет на сайт -->
         <div class="result-section assessment-block">
             <h3>🏦 Разумный бюджет на разработку сайта</h3>
             <div class="assessment-main">
                 <div class="assessment-value">
-                    <span class="big-number">${formatMoney(topRec.avgPrice)} ₽</span>
-                    <span class="assessment-label">— оптимально для ваших оборотов</span>
+                    <span class="big-number">${formatMoney(assessment.optimalReasonable)} ₽</span>
+                    <span class="assessment-label">— оптимальные инвестиции</span>
                 </div>
-                <div class="assessment-detail ${topRec.cssClass}">
-                    ${topRec.verdict}
+                <div class="assessment-range">
+                    💰 Разумный коридор: <strong>${formatMoney(assessment.minReasonable)} – ${formatMoney(assessment.maxReasonable)} ₽</strong>
+                    <span class="range-hint">(10-20% от месячного оборота)</span>
                 </div>
                 <div class="assessment-note">
-                    💡 Чистая прибыль после рекламы: <strong>${formatMoney(Math.max(0, Math.floor(assessment.monthlyNetProfit)))} ₽/мес</strong> → 
-                    Сайт окупится за <strong>${topRec.paybackMonths} мес.</strong>
+                    💡 При обороте <strong>${formatMoney(data.revenue)} ₽/мес</strong> и чистой прибыли <strong>${formatMoney(Math.max(0, Math.floor(assessment.monthlyNetProfit)))} ₽/мес</strong>
                 </div>
             </div>
             
             <div class="assessment-variants">
-                <div class="variant-title">Сравнение вариантов для вашей ситуации:</div>
+                <div class="variant-title">Сравнение с вашим бюджетом:</div>
                 ${Object.entries(assessment.assessments).map(([key, site]) => `
                     <div class="variant-row ${site.cssClass}">
                         <span class="variant-name">${site.name}</span>
@@ -490,9 +404,16 @@ function displayResults(data) {
                 `).join('')}
             </div>
             
-            ${isSelectedTooExpensive ? `
+            ${data.siteBudget.avg > assessment.maxReasonable ? `
             <div class="assessment-warning">
-                ⚠️ Выбранный вами "${selectedSite.name}" дороже разумного предела (макс. ${formatMoney(assessment.maxAcceptableBudget)} ₽). Рекомендую начать с "${topRec.name}".
+                ⚠️ Выбранный вами "${data.siteBudget.name}" дороже разумного предела (${formatMoney(assessment.maxReasonable)} ₽). 
+                Рекомендую рассмотреть "${topRec.name}".
+            </div>
+            ` : ''}
+            
+            ${data.siteBudget.avg < assessment.minReasonable ? `
+            <div class="assessment-tip">
+                💪 Ваш бюджет позволяет взять сайт дороже! Рассмотрите "${topRec.name}".
             </div>
             ` : ''}
         </div>
@@ -539,16 +460,13 @@ function restart() {
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
-    // Установка начальных значений
     updateDefaultCheck();
     
-    // Обработчик изменения ниши
     const nicheSelect = document.getElementById('niche');
     if (nicheSelect) {
         nicheSelect.addEventListener('change', updateDefaultCheck);
     }
     
-    // Валидация ввода чисел
     const numericInputs = ['revenue', 'averageOrder'];
     numericInputs.forEach(id => {
         const input = document.getElementById(id);
@@ -559,7 +477,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Telegram Web App
     if (window.Telegram && Telegram.WebApp) {
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
