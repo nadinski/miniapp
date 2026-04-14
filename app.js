@@ -244,7 +244,10 @@ function calculate() {
     let averageOrder = parseInt(averageOrderInput.value.replace(/[^\d]/g, ''));
     
     const niche = document.getElementById('niche').value;
-    const siteType = document.getElementById('siteType').value;
+    
+    // 🔥 ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ: Чекбокс вместо select
+    const needEcommerce = document.getElementById('needEcommerce');
+    const siteType = needEcommerce && needEcommerce.checked ? 'ecommerce' : 'landing';
     
     // ИСПРАВЛЕНИЕ: Проверка на NaN
     if (!averageOrder || isNaN(averageOrder)) {
@@ -492,7 +495,11 @@ function restart() {
     document.getElementById('revenue').value = '';
     document.getElementById('averageOrder').value = '';
     document.getElementById('niche').value = 'ecommerce';
-    document.getElementById('siteType').value = 'landing';
+    
+    // 🔥 ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ: Сброс чекбокса
+    const needEcommerce = document.getElementById('needEcommerce');
+    if (needEcommerce) needEcommerce.checked = false;
+    
     showStep(1);
 }
 
