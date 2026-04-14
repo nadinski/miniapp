@@ -1,176 +1,259 @@
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #0A0A0F;
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #6d3aff 0%, #4c1d95 100%);
     margin: 0;
-    padding: 24px;
+    padding: 20px;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+
+/* Декоративные фоновые элементы */
+body::before {
+    content: '';
+    position: fixed;
+    top: -20%;
+    right: -20%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(255, 158, 44, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    bottom: -10%;
+    left: -10%;
+    width: 50%;
+    height: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .container {
     max-width: 520px;
     width: 100%;
     margin: 0 auto;
-    background: #14141E;
-    border-radius: 24px;
-    padding: 40px 32px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(196, 160, 85, 0.15);
+    background: #ffffff;
+    border-radius: 40px;
+    padding: 36px 28px;
+    box-shadow: 
+        0 30px 60px -12px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    position: relative;
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .step {
     display: none;
+    animation: fadeSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .step.active {
     display: block;
 }
 
-/* Заголовки — Правитель: власть, уверенность */
+@keyframes fadeSlide {
+    from { 
+        opacity: 0; 
+        transform: translateY(8px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0);
+    }
+}
+
+/* Типографика */
 h2 {
-    color: #EDEDF0;
+    color: #1e1a2a;
     font-size: 28px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    letter-spacing: -0.3px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+    text-align: center;
 }
 
 .step-description {
-    color: #6B6B7F;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 32px;
     font-size: 14px;
-    font-weight: 400;
-    margin-bottom: 40px;
-    line-height: 1.5;
+    font-weight: 500;
 }
 
 .form-group {
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
 
 label {
     display: block;
-    color: #A1A1B0;
-    font-weight: 500;
-    margin-bottom: 10px;
+    color: #493f55;
+    font-weight: 600;
+    margin-bottom: 8px;
     font-size: 13px;
-    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .form-control {
     width: 100%;
-    padding: 14px 16px;
-    border: 1px solid rgba(196, 160, 85, 0.2);
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 400;
-    transition: all 0.2s ease;
-    background: #1C1C26;
-    font-family: "Inter", sans-serif;
-    color: #EDEDF0;
+    padding: 16px 18px;
+    border: 2px solid #f0e8df;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    background: #ffffff;
+    font-family: "Manrope", sans-serif;
+    color: #1e1a2a;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
 .form-control:hover {
-    border-color: rgba(196, 160, 85, 0.4);
-    background: #20202A;
+    border-color: #ff9e2c;
+    background: #fffbf5;
 }
 
 .form-control:focus {
     outline: none;
-    border-color: #C4A055;
-    background: #1C1C26;
-    box-shadow: 0 0 0 2px rgba(196, 160, 85, 0.1);
+    border-color: #6d3aff;
+    background: #ffffff;
+    box-shadow: 
+        0 0 0 3px rgba(109, 58, 255, 0.1),
+        0 4px 12px rgba(109, 58, 255, 0.06);
 }
 
 .form-control::placeholder {
-    color: #4A4A5A;
+    color: #a09bb0;
+    font-weight: 400;
 }
 
 select.form-control {
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C4A055' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236d3aff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 16px center;
-    padding-right: 40px;
+    background-position: right 18px center;
+    background-size: 16px;
+    padding-right: 48px;
 }
 
 .hint {
-    color: #5A5A6E;
+    display: block;
+    color: #8f89a0;
     font-size: 12px;
-    margin-top: 8px;
-    font-weight: 400;
+    margin-top: 6px;
+    font-weight: 500;
 }
 
 .info-box {
-    background: rgba(196, 160, 85, 0.06);
-    padding: 16px 20px;
-    border-radius: 16px;
-    margin-bottom: 32px;
-    border-left: 3px solid #C4A055;
+    background: rgba(109, 58, 255, 0.04);
+    padding: 14px 18px;
+    border-radius: 18px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(109, 58, 255, 0.08);
 }
 
 .info-box small {
-    color: #B8B8CC;
+    color: #5a5568;
     font-size: 13px;
     line-height: 1.5;
-    font-weight: 400;
+    font-weight: 500;
 }
 
-/* Кнопки — строгие, статусные */
+/* Чекбокс — стильный, без рогов */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    padding: 16px 18px;
+    background: #fffbf5;
+    border-radius: 20px;
+    border: 2px solid #f0e8df;
+    transition: all 0.25s ease;
+}
+
+.checkbox-label:hover {
+    border-color: #ff9e2c;
+    background: #ffffff;
+}
+
+.checkbox-modern {
+    width: 22px;
+    height: 22px;
+    accent-color: #6d3aff;
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.checkbox-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e1a2a;
+    user-select: none;
+}
+
+.checkbox-label:has(input:checked) {
+    border-color: #6d3aff;
+    background: rgba(109, 58, 255, 0.02);
+}
+
+/* Кнопки */
 button {
     border: none;
-    padding: 14px 24px;
+    padding: 16px 24px;
     border-radius: 40px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: "Inter", sans-serif;
-    letter-spacing: 0.3px;
+    transition: all 0.25s ease;
+    font-family: "Manrope", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .btn-primary {
-    background: #C4A055;
-    color: #0A0A0F;
+    background: #ff9e2c;
+    color: #fffbf5;
     width: 100%;
-    box-shadow: none;
+    box-shadow: 0 4px 12px rgba(255, 158, 44, 0.2);
+}
+
+.btn-primary:hover {
+    background: #e88a1a;
+    transform: scale(1.01);
+    box-shadow: 0 6px 16px rgba(255, 158, 44, 0.25);
 }
 
 .btn-primary:active {
     transform: scale(0.98);
-    background: #B08F45;
-}
-
-@media (hover: hover) {
-    .btn-primary:hover {
-        background: #D4B065;
-    }
 }
 
 .btn-secondary {
     background: transparent;
-    color: #A1A1B0;
-    border: 1px solid rgba(196, 160, 85, 0.25);
+    border: 2px solid #f0e8df;
+    color: #5a5568;
 }
 
-.btn-secondary:active {
-    transform: scale(0.98);
-}
-
-@media (hover: hover) {
-    .btn-secondary:hover {
-        border-color: #C4A055;
-        color: #EDEDF0;
-        background: rgba(196, 160, 85, 0.05);
-    }
+.btn-secondary:hover {
+    border-color: #ff9e2c;
+    color: #ff9e2c;
+    background: #fffbf5;
 }
 
 .button-group {
@@ -187,23 +270,25 @@ button {
     width: 100%;
 }
 
-/* Карточки результатов — строго, информативно */
+/* Карточки результатов — светлые, чистые */
 .result-section {
-    background: #1C1C26;
-    border-radius: 16px;
-    padding: 24px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 22px;
     margin-bottom: 16px;
-    border: 1px solid rgba(196, 160, 85, 0.08);
+    border: 1px solid #f0e8df;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
 
 .result-section h3 {
-    color: #EDEDF0;
+    color: #1e1a2a;
     font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 20px;
+    font-weight: 700;
+    margin-bottom: 18px;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(196, 160, 85, 0.12);
-    letter-spacing: 0.2px;
+    border-bottom: 2px solid #f0e8df;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
 }
 
 .result-item {
@@ -211,7 +296,7 @@ button {
     justify-content: space-between;
     align-items: center;
     padding: 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid #f7f2ea;
 }
 
 .result-item:last-child {
@@ -219,65 +304,65 @@ button {
 }
 
 .result-item strong {
-    color: #A1A1B0;
-    font-weight: 400;
+    color: #5a5568;
+    font-weight: 500;
     font-size: 14px;
 }
 
 .result-item span {
-    color: #EDEDF0;
-    font-weight: 600;
+    color: #1e1a2a;
+    font-weight: 700;
     font-size: 15px;
 }
 
-.highlight-gold {
-    background: rgba(196, 160, 85, 0.06);
+.highlight-blue {
+    background: linear-gradient(135deg, #6d3aff08 0%, #ff9e2c08 100%);
     padding: 14px 16px !important;
-    border-radius: 12px;
-    margin: 10px 0;
+    border-radius: 16px;
+    margin: 8px 0;
     border-bottom: none !important;
 }
 
-.highlight-gold strong {
-    color: #C4A055;
-    font-weight: 500;
+.highlight-blue strong {
+    color: #6d3aff;
+    font-weight: 600;
 }
 
-.highlight-gold span {
-    color: #C4A055;
-    font-size: 22px;
-    font-weight: 700;
+.highlight-blue span {
+    color: #6d3aff;
+    font-size: 20px;
+    font-weight: 800;
 }
 
 .recommendation-item {
-    background: rgba(255, 255, 255, 0.02);
+    background: #faf7f2;
     padding: 14px 16px;
-    border-radius: 12px;
+    border-radius: 16px;
     margin-bottom: 10px;
     font-size: 13px;
-    font-weight: 400;
-    color: #B8B8CC;
-    border-left: 3px solid #C4A055;
+    font-weight: 500;
+    color: #2f2a3e;
+    border-left: 4px solid #ff9e2c;
 }
 
 .recommendation-item:last-child {
     margin-bottom: 0;
 }
 
-/* Цветовые классы для статусов */
+/* Статусы */
 .warning {
-    color: #E5484D !important;
-    font-weight: 600 !important;
+    color: #dc2626 !important;
+    font-weight: 700 !important;
 }
 
 .good {
-    color: #46A758 !important;
-    font-weight: 600 !important;
+    color: #10b981 !important;
+    font-weight: 700 !important;
 }
 
 .normal {
-    color: #C4A055 !important;
-    font-weight: 600 !important;
+    color: #6d3aff !important;
+    font-weight: 700 !important;
 }
 
 .result-footer {
@@ -286,31 +371,36 @@ button {
 }
 
 .result-footer small {
-    color: #5A5A6E;
+    color: #a09bb0;
     font-size: 11px;
     line-height: 1.5;
     display: block;
 }
 
-/* Блок оценки бюджета */
+/* Блок оценки бюджета — без рогов! */
 .assessment-block {
-    border-radius: 16px;
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid #f0e8df;
 }
 
 .assessment-main {
-    background: #1C1C26;
+    background: #fffbf5;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 20px;
     margin-bottom: 20px;
-    border: 1px solid rgba(196, 160, 85, 0.1);
+    border: 1px solid #f0e8df;
 }
 
 .big-number {
     font-size: 40px;
-    font-weight: 700;
-    color: #C4A055;
-    line-height: 1;
-    letter-spacing: -0.5px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6d3aff 0%, #ff9e2c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
 }
 
 .assessment-value {
@@ -322,20 +412,40 @@ button {
 }
 
 .assessment-label {
-    color: #6B6B7F;
+    color: #8f89a0;
     font-size: 13px;
-    font-weight: 400;
+    font-weight: 500;
+    text-transform: uppercase;
 }
 
-.assessment-detail {
-    margin-top: 8px;
+.assessment-range {
+    margin: 16px 0;
+    padding: 14px 16px;
+    background: #ffffff;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e1a2a;
+    border: 1px solid #f0e8df;
+}
+
+.range-hint {
+    display: block;
+    font-size: 12px;
+    color: #8f89a0;
+    margin-top: 4px;
     font-weight: 500;
+}
+
+.assessment-note {
+    margin-top: 14px;
+    padding: 14px;
+    background: #ffffff;
+    border-radius: 16px;
     font-size: 13px;
-    display: inline-block;
-    padding: 4px 12px;
-    background: rgba(196, 160, 85, 0.08);
-    border-radius: 20px;
-    color: #C4A055;
+    color: #5a5568;
+    font-weight: 500;
+    border: 1px solid #f0e8df;
 }
 
 .assessment-variants {
@@ -343,20 +453,20 @@ button {
 }
 
 .variant-title {
-    font-weight: 500;
-    margin-bottom: 16px;
-    color: #A1A1B0;
-    font-size: 12px;
-    letter-spacing: 0.5px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #1e1a2a;
+    font-size: 13px;
     text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .variant-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 14px 0;
+    border-bottom: 1px solid #f0e8df;
     font-size: 13px;
     gap: 12px;
 }
@@ -367,15 +477,15 @@ button {
 
 .variant-name {
     flex: 2;
-    font-weight: 400;
-    color: #B8B8CC;
+    font-weight: 600;
+    color: #2f2a3e;
 }
 
 .variant-price {
     flex: 1;
     text-align: right;
-    color: #EDEDF0;
-    font-weight: 500;
+    color: #1e1a2a;
+    font-weight: 700;
     font-size: 14px;
 }
 
@@ -383,44 +493,46 @@ button {
     flex: 2;
     text-align: right;
     font-size: 12px;
-    font-weight: 400;
+    font-weight: 600;
 }
 
-.verdict-cheap .variant-verdict { color: #46A758; }
-.verdict-optimal .variant-verdict { color: #C4A055; font-weight: 600; }
-.verdict-expensive .variant-verdict { color: #E5484D; }
-.verdict-too-expensive .variant-verdict { color: #E5484D; opacity: 0.6; }
+.verdict-cheap .variant-verdict { color: #10b981; }
+.verdict-optimal .variant-verdict { color: #6d3aff; font-weight: 700; }
+.verdict-expensive .variant-verdict { color: #f59e0b; }
+.verdict-too-expensive .variant-verdict { color: #dc2626; }
 
 .assessment-warning {
     margin-top: 20px;
-    padding: 14px 18px;
-    background: rgba(229, 72, 77, 0.08);
-    border-radius: 12px;
-    color: #E5484D;
-    font-weight: 500;
-    font-size: 12px;
-    border: 1px solid rgba(229, 72, 77, 0.15);
+    padding: 16px 18px;
+    background: #fef2f2;
+    border-radius: 18px;
+    color: #991b1b;
+    font-weight: 600;
+    font-size: 13px;
+    border: 1px solid #fecaca;
 }
 
 .assessment-tip {
     margin-top: 16px;
-    padding: 14px 18px;
-    background: rgba(70, 167, 88, 0.06);
-    border-radius: 12px;
-    color: #46A758;
-    font-weight: 500;
-    font-size: 12px;
-    border: 1px solid rgba(70, 167, 88, 0.1);
+    padding: 16px 18px;
+    background: #ecfdf5;
+    border-radius: 18px;
+    color: #065f46;
+    font-weight: 600;
+    font-size: 13px;
+    border: 1px solid #a7f3d0;
 }
 
+/* Адаптивность */
 @media (max-width: 480px) {
     body {
-        padding: 16px;
+        padding: 12px;
+        align-items: flex-start;
     }
     
     .container {
         padding: 28px 20px;
-        border-radius: 20px;
+        border-radius: 32px;
     }
     
     h2 {
@@ -432,7 +544,7 @@ button {
     }
 }
 
-/* Кастомный скролл — минималистичный */
+/* Кастомный скролл */
 ::-webkit-scrollbar {
     width: 4px;
 }
@@ -442,10 +554,32 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(196, 160, 85, 0.25);
-    border-radius: 0;
+    background: rgba(109, 58, 255, 0.2);
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(196, 160, 85, 0.5);
+    background: rgba(109, 58, 255, 0.4);
+}
+
+/* Кнопка "Хочу такой сайт" в результатах */
+.btn-recommend {
+    display: block;
+    text-align: center;
+    background: #ff9e2c;
+    color: #fffbf5;
+    padding: 16px 24px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 14px;
+    margin-top: 16px;
+    transition: all 0.25s ease;
+    letter-spacing: 0.03em;
+}
+
+.btn-recommend:hover {
+    background: #e88a1a;
+    transform: scale(1.01);
 }
