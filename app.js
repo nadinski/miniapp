@@ -78,14 +78,16 @@ const SITE_OPTIONS = {
     }
 };
 
-// Форматирование валюты
+// Форматирование валюты с защитой от NaN и отрицательных значений
 function formatMoney(amount) {
-    return amount.toLocaleString('ru-RU');
+    if (isNaN(amount) || amount === null || amount === undefined) return '0';
+    return Math.round(amount).toLocaleString('ru-RU');
 }
 
 // Форматирование числа
 function formatNumber(num) {
-    return num.toLocaleString('ru-RU');
+    if (isNaN(num) || num === null || num === undefined) return '0';
+    return Math.round(num).toLocaleString('ru-RU');
 }
 
 // Показать шаг
@@ -115,7 +117,7 @@ function validateStep1() {
     const revenueInput = document.getElementById('revenue');
     const revenue = parseInt(revenueInput.value.replace(/[^\d]/g, ''));
     
-    if (!revenue || revenue < 1000) {
+    if (!revenue || isNaN(revenue) || revenue < 1000) {
         alert('Укажите желаемую выручку (минимум 1 000 руб.)');
         return false;
     }
@@ -165,11 +167,21 @@ function assessReasonableSiteBudget(revenue, averageOrder, adBudget) {
     // Разумный бюджет на сайт: 10-20% от месячного оборота
     const minReasonable = Math.floor(revenue * 0.1);
     const optimalReasonable = Math.floor(revenue * 0.15);
-    const maxReasonable = Math.floor(revenue * 0.2);
+    let maxReasonable = Math.floor(revenue * 0.2);
     
     // Но не больше 6 месячных чистых прибылей (чтобы окупался за полгода)
-    const maxByProfit = Math.floor(monthlyNetProfit * 6);
-    const cappedMaxReasonable = Math.min(maxReasonable, maxByProfit);
+    // 🔧 ИСПРАВЛЕНИЕ: Защита от отрицательной прибыли
+    let maxByProfit;
+    if (monthlyNetProfit > 0) {
+        maxByProfit = Math.floor(monthlyNetProfit * 6);
+    } else {
+        // Если прибыль отрицательная, используем только процент от оборота
+        maxByProfit = maxReasonable;
+    }
+    
+    // 🔧 ИСПРАВЛЕНИЕ: cappedMaxReasonable не может быть меньше minReasonable
+    let cappedMaxReasonable = Math.min(maxReasonable, maxByProfit);
+    cappedMaxReasonable = Math.max(cappedMaxReasonable, minReasonable);
     
     // Оценка каждого типа сайта относительно разумного бюджета
     const siteAssessments = {};
@@ -229,23 +241,24 @@ function calculate() {
     const revenueInput = document.getElementById('revenue');
     const averageOrderInput = document.getElementById('averageOrder');
     
-    const revenue = parseInt(revenueInput.value.replace(/[^\d]/g, ''));
+    let revenue = parseInt(revenueInput.value.replace(/[^\d]/g, ''));
     let averageOrder = parseInt(averageOrderInput.value.replace(/[^\d]/g, ''));
     
     const niche = document.getElementById('niche').value;
     const siteType = document.getElementById('siteType').value;
     
+    // 🔧 ИСПРАВЛЕНИЕ: Проверка на NaN
     if (!averageOrder || isNaN(averageOrder)) {
         averageOrder = NICHE_CONFIG[niche].defaultCheck;
         averageOrderInput.value = averageOrder;
     }
     
-    if (!revenue || revenue < 1000) {
+    if (!revenue || isNaN(revenue) || revenue < 1000) {
         alert('Укажите желаемую выручку (минимум 1 000 руб.)');
         return;
     }
     
-    if (!averageOrder || averageOrder < 500) {
+    if (!averageOrder || isNaN(averageOrder) || averageOrder < 500) {
         alert('Средний чек должен быть не менее 500 руб.');
         return;
     }
@@ -260,6 +273,8 @@ function calculate() {
     
     const averageCtr = config.ctr / 100;
     const impressionsNeeded = Math.ceil(visitorsNeeded / averageCtr);
+    
+    // 🔧 ИСПРАВЛЕНИЕ: Защита от деления на ноль
     const cpo = ordersNeeded > 0 ? Math.ceil(adBudget / ordersNeeded) : 0;
     
     const siteConfig = SITE_OPTIONS[siteType];
@@ -340,6 +355,16 @@ function displayResults(data) {
     const assessment = data.budgetAssessment;
     const topRec = assessment.topRecommendation;
     
+    // 🔧 ИСПРАВЛЕНИЕ: Корректное отображение прибыли (включая отрицательную)
+    const netProfit = Math.floor(data.roi.monthlyNetProfit);
+    const netProfitDisplay = netProfit >= 0 
+        ? formatMoney(netProfit)
+        : `убыток ${formatMoney(Math.abs(netProfit))}`;
+    
+    const monthlyNetProfitDisplay = Math.floor(assessment.monthlyNetProfit);
+    const monthlyNetProfitText = monthlyNetProfitDisplay >= 0 
+        ? formatMoney(monthlyNetProfitDisplay)
+        : `убыток ${formatMoney(Math.abs(monthlyNetProfitDisplay))}`;
 
     results.innerHTML = `
         <div class="result-section">
@@ -391,7 +416,7 @@ function displayResults(data) {
                     <span class="range-hint">(10-20% от месячного оборота)</span>
                 </div>
                 <div class="assessment-note">
-                    💡 При обороте <strong>${formatMoney(data.revenue)} ₽/мес</strong> и чистой прибыли <strong>${formatMoney(Math.max(0, Math.floor(assessment.monthlyNetProfit)))} ₽/мес</strong>
+                    💡 При обороте <strong>${formatMoney(data.revenue)} ₽/мес</strong> и чистой прибыли <strong>${monthlyNetProfitText} ₽/мес</strong>
                 </div>
             </div>
             
@@ -416,7 +441,7 @@ function displayResults(data) {
                 </div>
                 <div class="result-item" style="border-bottom: none;">
                     <strong>💵 Чистая прибыль после рекламы:</strong>
-                    <span><strong>${formatMoney(Math.max(0, Math.floor(data.roi.monthlyNetProfit)))} ₽/мес</strong></span>
+                    <span><strong>${netProfitDisplay} ₽/мес</strong></span>
                 </div>
                 
                 <!-- Вердикт по выбранному варианту -->
