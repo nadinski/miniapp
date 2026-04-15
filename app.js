@@ -515,7 +515,7 @@ function displayResults(data) {
                 <span>${formatMoney(data.adBudget)} руб.</span>
             </div>
             <div class="result-item" style="font-size: 13px; color: #64748B; padding-left: 20px;">
-                <span>↳ Настройка рекламы (единоразово):</span>
+                <span>↳ Настройка рекламы:</span>
                 <span>${formatMoney(data.adSetupCost)} руб.</span>
             </div>
             <div class="result-item" style="font-size: 13px; color: #64748B; padding-left: 20px;">
