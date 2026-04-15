@@ -425,6 +425,58 @@ function displayResults(data) {
             </div>
         </div>
     ` : '';
+    // Внутри displayResults, перед `results.innerHTML = `
+// Функция для формирования сообщения в Telegram
+function generateTelegramMessage(data) {
+    const hasProfit = data.roi.monthlyNetProfit > 0;
+    const netProfitDisplay = hasProfit 
+        ? formatMoney(Math.floor(data.roi.monthlyNetProfit))
+        : `-${formatMoney(Math.abs(Math.floor(data.roi.monthlyNetProfit)))}`;
+    
+    const roiText = data.roi.paybackMonths === Infinity 
+        ? 'не окупится' 
+        : `${data.roi.paybackMonths} мес.`;
+
+    const message = `
+*Добрый день, Надежда! Мне нужен сайт.*
+
+📊 *Исходные данные:*
+• Желаемая выручка: ${formatMoney(data.revenue)} ₽/мес
+• Ниша: ${data.niche}
+• Средний чек: ${formatMoney(data.averageOrder)} ₽
+• Нужен интернет-магазин: ${data.needEcommerce ? '✅ Да' : '❌ Нет'}
+
+🎯 *Целевые показатели:*
+• Заказов в месяц: ${formatNumber(data.ordersNeeded)}
+• Посетителей: ${formatNumber(data.visitorsNeeded)}
+• Показов рекламы: ${formatNumber(data.impressionsNeeded)}
+
+💰 *Рекламный бюджет:*
+• Месячный бюджет: ${formatMoney(data.adBudget)} ₽
+• CPC: ${data.cpc} ₽
+• CPO: ${formatMoney(data.cpo)} ₽
+• Конверсия: ${data.conversion}%
+
+🏦 *Разумный бюджет на сайт:*
+• Оптимально: ${formatMoney(data.optimalReasonable)} ₽
+• Коридор: ${formatMoney(data.minReasonable)} – ${formatMoney(data.maxReasonable)} ₽
+• Чистая прибыль: ${netProfitDisplay} ₽/мес
+• Окупаемость: ${roiText}
+
+🏆 *Рекомендованное решение:*
+• ${data.recommendedSite.name}
+• Инвестиции: ${data.recommendedSite.isSubscription ? formatMoney(data.recommendedSite.avgPrice) + ' ₽/мес' : formatMoney(data.recommendedSite.minPrice) + ' – ' + formatMoney(data.recommendedSite.maxPrice) + ' ₽'}
+• Срок запуска: ${data.recommendedSite.timeToDevelop}
+• ${data.recommendedSite.description}
+`.trim();
+
+    return encodeURIComponent(message);
+}
+
+// Формируем ссылку на Telegram (замени nadyaborse на свой username)
+const telegramUsername = 'nadinski'; // ⚠️ ЗАМЕНИ НА СВОЙ TELEGRAM USERNAME
+const telegramMessage = generateTelegramMessage(data);
+const telegramUrl = `https://t.me/${telegramUsername}?text=${telegramMessage}`;
     
     results.innerHTML = `
         <!-- Блок 1: Целевые показатели -->
@@ -523,9 +575,7 @@ function displayResults(data) {
                     <span><strong>${netProfitDisplay} ₽/мес</strong></span>
                 </div>
                 
-                <a href="https://t.me/nadyaborse" target="_blank" style="display: block; text-align: center; background: #FF9E2C; color: #FFFBF5; padding: 14px; border-radius: 40px; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 14px; margin-top: 8px;">
-                    Хочу такой сайт →
-                </a>
+                `<a href="${telegramUrl}" target="_blank" class="btn-recommend">Хочу такой сайт →</a>`
             </div>
             ` : ''}
             
