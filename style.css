@@ -6,7 +6,7 @@
 
 body {
     font-family: "Manrope", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #6d3aff 0%, #4c1d95 100%);
+    background: linear-gradient(145deg, #0F0F1A 0%, #1A1535 50%, #0D0B1A 100%);
     margin: 0;
     padding: 20px;
     min-height: 100vh;
@@ -16,15 +16,15 @@ body {
     position: relative;
 }
 
-/* Декоративные фоновые элементы */
+/* Декоративные элементы — холодное свечение */
 body::before {
     content: '';
     position: fixed;
-    top: -20%;
-    right: -20%;
+    top: -10%;
+    right: -10%;
     width: 60%;
     height: 60%;
-    background: radial-gradient(circle, rgba(255, 158, 44, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(100, 80, 200, 0.12) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
 }
@@ -36,7 +36,7 @@ body::after {
     left: -10%;
     width: 50%;
     height: 50%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(60, 100, 200, 0.08) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
 }
@@ -45,15 +45,18 @@ body::after {
     max-width: 520px;
     width: 100%;
     margin: 0 auto;
-    background: #ffffff;
-    border-radius: 40px;
+    background: rgba(20, 18, 35, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 36px;
     padding: 36px 28px;
     box-shadow: 
-        0 30px 60px -12px rgba(0, 0, 0, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+        0 30px 60px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 0 0 1px rgba(100, 80, 200, 0.1);
     position: relative;
     z-index: 10;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .step {
@@ -78,7 +81,7 @@ body::after {
 
 /* Типографика */
 h2 {
-    color: #1e1a2a;
+    color: #F0EDFA;
     font-size: 28px;
     font-weight: 700;
     margin-bottom: 8px;
@@ -87,7 +90,7 @@ h2 {
 }
 
 .step-description {
-    color: #6b7280;
+    color: #9A96B5;
     text-align: center;
     margin-bottom: 32px;
     font-size: 14px;
@@ -100,51 +103,51 @@ h2 {
 
 label {
     display: block;
-    color: #493f55;
+    color: #C5C0DA;
     font-weight: 600;
     margin-bottom: 8px;
-    font-size: 13px;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
 }
 
 .form-control {
     width: 100%;
     padding: 16px 18px;
-    border: 2px solid #f0e8df;
-    border-radius: 20px;
+    border: 1.5px solid rgba(255, 255, 255, 0.06);
+    border-radius: 18px;
     font-size: 16px;
     font-weight: 500;
     transition: all 0.25s ease;
-    background: #ffffff;
+    background: rgba(10, 8, 20, 0.6);
     font-family: "Manrope", sans-serif;
-    color: #1e1a2a;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    color: #F0EDFA;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .form-control:hover {
-    border-color: #ff9e2c;
-    background: #fffbf5;
+    border-color: rgba(255, 158, 44, 0.3);
+    background: rgba(15, 12, 28, 0.8);
 }
 
 .form-control:focus {
     outline: none;
-    border-color: #6d3aff;
-    background: #ffffff;
+    border-color: #FF9E2C;
+    background: rgba(15, 12, 28, 0.9);
     box-shadow: 
-        0 0 0 3px rgba(109, 58, 255, 0.1),
-        0 4px 12px rgba(109, 58, 255, 0.06);
+        0 0 0 3px rgba(255, 158, 44, 0.12),
+        0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .form-control::placeholder {
-    color: #a09bb0;
+    color: #6B6689;
     font-weight: 400;
 }
 
 select.form-control {
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236d3aff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23FF9E2C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 18px center;
     background-size: 16px;
@@ -153,49 +156,49 @@ select.form-control {
 
 .hint {
     display: block;
-    color: #8f89a0;
+    color: #7B77A0;
     font-size: 12px;
     margin-top: 6px;
     font-weight: 500;
 }
 
 .info-box {
-    background: rgba(109, 58, 255, 0.04);
+    background: rgba(100, 80, 200, 0.06);
     padding: 14px 18px;
     border-radius: 18px;
     margin-bottom: 28px;
-    border: 1px solid rgba(109, 58, 255, 0.08);
+    border: 1px solid rgba(100, 80, 200, 0.12);
 }
 
 .info-box small {
-    color: #5a5568;
+    color: #B8B4D4;
     font-size: 13px;
     line-height: 1.5;
     font-weight: 500;
 }
 
-/* Чекбокс — стильный, без рогов */
+/* Чекбокс — премиальный */
 .checkbox-label {
     display: flex;
     align-items: center;
     gap: 14px;
     cursor: pointer;
     padding: 16px 18px;
-    background: #fffbf5;
-    border-radius: 20px;
-    border: 2px solid #f0e8df;
+    background: rgba(10, 8, 20, 0.4);
+    border-radius: 18px;
+    border: 1.5px solid rgba(255, 255, 255, 0.06);
     transition: all 0.25s ease;
 }
 
 .checkbox-label:hover {
-    border-color: #ff9e2c;
-    background: #ffffff;
+    border-color: rgba(255, 158, 44, 0.3);
+    background: rgba(15, 12, 28, 0.6);
 }
 
 .checkbox-modern {
     width: 22px;
     height: 22px;
-    accent-color: #6d3aff;
+    accent-color: #FF9E2C;
     cursor: pointer;
     margin: 0;
     flex-shrink: 0;
@@ -204,13 +207,13 @@ select.form-control {
 .checkbox-text {
     font-size: 15px;
     font-weight: 600;
-    color: #1e1a2a;
+    color: #F0EDFA;
     user-select: none;
 }
 
 .checkbox-label:has(input:checked) {
-    border-color: #6d3aff;
-    background: rgba(109, 58, 255, 0.02);
+    border-color: #FF9E2C;
+    background: rgba(255, 158, 44, 0.04);
 }
 
 /* Кнопки */
@@ -224,20 +227,21 @@ button {
     transition: all 0.25s ease;
     font-family: "Manrope", sans-serif;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
 }
 
 .btn-primary {
-    background: #ff9e2c;
-    color: #fffbf5;
+    background: #FF9E2C;
+    color: #0A0814;
     width: 100%;
-    box-shadow: 0 4px 12px rgba(255, 158, 44, 0.2);
+    box-shadow: 0 4px 16px rgba(255, 158, 44, 0.25);
+    font-weight: 800;
 }
 
 .btn-primary:hover {
-    background: #e88a1a;
+    background: #FFB052;
     transform: scale(1.01);
-    box-shadow: 0 6px 16px rgba(255, 158, 44, 0.25);
+    box-shadow: 0 6px 20px rgba(255, 158, 44, 0.35);
 }
 
 .btn-primary:active {
@@ -246,14 +250,14 @@ button {
 
 .btn-secondary {
     background: transparent;
-    border: 2px solid #f0e8df;
-    color: #5a5568;
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    color: #C5C0DA;
 }
 
 .btn-secondary:hover {
-    border-color: #ff9e2c;
-    color: #ff9e2c;
-    background: #fffbf5;
+    border-color: #FF9E2C;
+    color: #FF9E2C;
+    background: rgba(255, 158, 44, 0.04);
 }
 
 .button-group {
@@ -270,25 +274,27 @@ button {
     width: 100%;
 }
 
-/* Карточки результатов — светлые, чистые */
+/* Карточки результатов — холодный премиум */
 .result-section {
-    background: #ffffff;
-    border-radius: 24px;
+    background: rgba(15, 12, 28, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 22px;
     padding: 22px;
     margin-bottom: 16px;
-    border: 1px solid #f0e8df;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .result-section h3 {
-    color: #1e1a2a;
-    font-size: 15px;
+    color: #F0EDFA;
+    font-size: 14px;
     font-weight: 700;
     margin-bottom: 18px;
     padding-bottom: 12px;
-    border-bottom: 2px solid #f0e8df;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.06);
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.05em;
 }
 
 .result-item {
@@ -296,7 +302,7 @@ button {
     justify-content: space-between;
     align-items: center;
     padding: 12px 0;
-    border-bottom: 1px solid #f7f2ea;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .result-item:last-child {
@@ -304,45 +310,46 @@ button {
 }
 
 .result-item strong {
-    color: #5a5568;
+    color: #A6A0C9;
     font-weight: 500;
     font-size: 14px;
 }
 
 .result-item span {
-    color: #1e1a2a;
+    color: #F0EDFA;
     font-weight: 700;
     font-size: 15px;
 }
 
 .highlight-blue {
-    background: linear-gradient(135deg, #6d3aff08 0%, #ff9e2c08 100%);
+    background: rgba(100, 80, 200, 0.08);
     padding: 14px 16px !important;
     border-radius: 16px;
     margin: 8px 0;
     border-bottom: none !important;
+    border: 1px solid rgba(100, 80, 200, 0.12);
 }
 
 .highlight-blue strong {
-    color: #6d3aff;
+    color: #A69DF0;
     font-weight: 600;
 }
 
 .highlight-blue span {
-    color: #6d3aff;
+    color: #FF9E2C;
     font-size: 20px;
     font-weight: 800;
 }
 
 .recommendation-item {
-    background: #faf7f2;
+    background: rgba(255, 255, 255, 0.02);
     padding: 14px 16px;
     border-radius: 16px;
     margin-bottom: 10px;
     font-size: 13px;
     font-weight: 500;
-    color: #2f2a3e;
-    border-left: 4px solid #ff9e2c;
+    color: #C5C0DA;
+    border-left: 3px solid #FF9E2C;
 }
 
 .recommendation-item:last-child {
@@ -351,17 +358,17 @@ button {
 
 /* Статусы */
 .warning {
-    color: #dc2626 !important;
+    color: #F87171 !important;
     font-weight: 700 !important;
 }
 
 .good {
-    color: #10b981 !important;
+    color: #4ADE80 !important;
     font-weight: 700 !important;
 }
 
 .normal {
-    color: #6d3aff !important;
+    color: #FF9E2C !important;
     font-weight: 700 !important;
 }
 
@@ -371,31 +378,29 @@ button {
 }
 
 .result-footer small {
-    color: #a09bb0;
+    color: #7B77A0;
     font-size: 11px;
     line-height: 1.5;
     display: block;
 }
 
-/* Блок оценки бюджета — без рогов! */
+/* Блок оценки бюджета — холодный премиум */
 .assessment-block {
-    border-radius: 24px;
-    background: #ffffff;
-    border: 1px solid #f0e8df;
+    border-radius: 22px;
 }
 
 .assessment-main {
-    background: #fffbf5;
+    background: rgba(10, 8, 20, 0.5);
     padding: 20px;
     border-radius: 20px;
     margin-bottom: 20px;
-    border: 1px solid #f0e8df;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .big-number {
     font-size: 40px;
     font-weight: 800;
-    background: linear-gradient(135deg, #6d3aff 0%, #ff9e2c 100%);
+    background: linear-gradient(135deg, #FF9E2C 0%, #C084FC 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -412,7 +417,7 @@ button {
 }
 
 .assessment-label {
-    color: #8f89a0;
+    color: #9A96B5;
     font-size: 13px;
     font-weight: 500;
     text-transform: uppercase;
@@ -421,18 +426,18 @@ button {
 .assessment-range {
     margin: 16px 0;
     padding: 14px 16px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.02);
     border-radius: 16px;
     font-size: 14px;
     font-weight: 600;
-    color: #1e1a2a;
-    border: 1px solid #f0e8df;
+    color: #F0EDFA;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .range-hint {
     display: block;
     font-size: 12px;
-    color: #8f89a0;
+    color: #7B77A0;
     margin-top: 4px;
     font-weight: 500;
 }
@@ -440,12 +445,12 @@ button {
 .assessment-note {
     margin-top: 14px;
     padding: 14px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.02);
     border-radius: 16px;
     font-size: 13px;
-    color: #5a5568;
+    color: #B8B4D4;
     font-weight: 500;
-    border: 1px solid #f0e8df;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .assessment-variants {
@@ -455,10 +460,10 @@ button {
 .variant-title {
     font-weight: 700;
     margin-bottom: 14px;
-    color: #1e1a2a;
-    font-size: 13px;
+    color: #C5C0DA;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
 }
 
 .variant-row {
@@ -466,7 +471,7 @@ button {
     justify-content: space-between;
     align-items: center;
     padding: 14px 0;
-    border-bottom: 1px solid #f0e8df;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     font-size: 13px;
     gap: 12px;
 }
@@ -478,13 +483,13 @@ button {
 .variant-name {
     flex: 2;
     font-weight: 600;
-    color: #2f2a3e;
+    color: #D2CEED;
 }
 
 .variant-price {
     flex: 1;
     text-align: right;
-    color: #1e1a2a;
+    color: #F0EDFA;
     font-weight: 700;
     font-size: 14px;
 }
@@ -496,31 +501,31 @@ button {
     font-weight: 600;
 }
 
-.verdict-cheap .variant-verdict { color: #10b981; }
-.verdict-optimal .variant-verdict { color: #6d3aff; font-weight: 700; }
-.verdict-expensive .variant-verdict { color: #f59e0b; }
-.verdict-too-expensive .variant-verdict { color: #dc2626; }
+.verdict-cheap .variant-verdict { color: #4ADE80; }
+.verdict-optimal .variant-verdict { color: #FF9E2C; font-weight: 700; }
+.verdict-expensive .variant-verdict { color: #FBBF24; }
+.verdict-too-expensive .variant-verdict { color: #F87171; }
 
 .assessment-warning {
     margin-top: 20px;
     padding: 16px 18px;
-    background: #fef2f2;
+    background: rgba(248, 113, 113, 0.06);
     border-radius: 18px;
-    color: #991b1b;
+    color: #FCA5A5;
     font-weight: 600;
     font-size: 13px;
-    border: 1px solid #fecaca;
+    border: 1px solid rgba(248, 113, 113, 0.15);
 }
 
 .assessment-tip {
     margin-top: 16px;
     padding: 16px 18px;
-    background: #ecfdf5;
+    background: rgba(74, 222, 128, 0.04);
     border-radius: 18px;
-    color: #065f46;
+    color: #86EFAC;
     font-weight: 600;
     font-size: 13px;
-    border: 1px solid #a7f3d0;
+    border: 1px solid rgba(74, 222, 128, 0.1);
 }
 
 /* Адаптивность */
@@ -532,7 +537,7 @@ button {
     
     .container {
         padding: 28px 20px;
-        border-radius: 32px;
+        border-radius: 28px;
     }
     
     h2 {
@@ -554,20 +559,20 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(109, 58, 255, 0.2);
+    background: rgba(255, 158, 44, 0.2);
     border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(109, 58, 255, 0.4);
+    background: rgba(255, 158, 44, 0.4);
 }
 
 /* Кнопка "Хочу такой сайт" в результатах */
 .btn-recommend {
     display: block;
     text-align: center;
-    background: #ff9e2c;
-    color: #fffbf5;
+    background: #FF9E2C;
+    color: #0A0814;
     padding: 16px 24px;
     border-radius: 40px;
     text-decoration: none;
@@ -576,10 +581,12 @@ button {
     font-size: 14px;
     margin-top: 16px;
     transition: all 0.25s ease;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
+    box-shadow: 0 4px 16px rgba(255, 158, 44, 0.2);
 }
 
 .btn-recommend:hover {
-    background: #e88a1a;
+    background: #FFB052;
     transform: scale(1.01);
+    box-shadow: 0 6px 20px rgba(255, 158, 44, 0.3);
 }
