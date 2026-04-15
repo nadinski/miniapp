@@ -1,5 +1,5 @@
-/* ===== AWARD-WINNING UX/UI: ТОЧНАЯ ГЕОМЕТРИЯ v1 + ПОЛНЫЙ ФУНКЦИОНАЛ ===== */
-/* Скругления, градиенты и фон — как в любимом первом варианте */
+/* ===== ИСХОДНЫЙ СТИЛЬ ===== */
+/* Взято напрямую из вашего первого варианта, добавлены только новые элементы */
 
 * {
     box-sizing: border-box;
@@ -9,7 +9,6 @@
 
 body {
     font-family: "Manrope", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    /* ТОТ САМЫЙ радиальный градиент из первого варианта */
     background: radial-gradient(circle at 0% 0%, #667eea 0%, #4c1d95 100%);
     margin: 0;
     padding: 20px;
@@ -20,7 +19,6 @@ body {
     position: relative;
 }
 
-/* Те самые фоновые элементы для глубины — точь-в-точь из v1 */
 body::before {
     content: '';
     position: fixed;
@@ -46,15 +44,14 @@ body::after {
 }
 
 .container {
-    max-width: 520px;
+    max-width: 500px;
     width: 100%;
     margin: 0 auto;
-    /* То самое стекло из v1 */
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-radius: 40px; /* ТОЧНО как в v1 */
-    padding: 32px 28px; /* ТОЧНО как в v1 */
+    border-radius: 40px;
+    padding: 32px 28px;
     box-shadow: 
         0 30px 60px -12px rgba(0, 0, 0, 0.25),
         0 0 0 1px rgba(255, 255, 255, 0.1) inset,
@@ -85,7 +82,6 @@ body::after {
     }
 }
 
-/* Типографика — сохранён стиль v1 */
 h2 {
     color: #1a1a2e;
     font-size: 28px;
@@ -130,7 +126,7 @@ label {
     margin-bottom: 8px;
     font-size: 14px;
     letter-spacing: -0.01em;
-    text-transform: uppercase;
+    text-transform: none; /* Убрал uppercase */
     opacity: 0.85;
 }
 
@@ -138,7 +134,7 @@ label {
     width: 100%;
     padding: 16px 18px;
     border: 2px solid #e8eef2;
-    border-radius: 20px; /* ТОЧНО как в v1 */
+    border-radius: 20px;
     font-size: 16px;
     font-weight: 500;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -198,7 +194,7 @@ select.form-control {
     font-weight: 500;
 }
 
-/* Чекбокс — в стиле v1 */
+/* Новый чекбокс — в стиле оригинала */
 .checkbox-label {
     display: flex;
     align-items: center;
@@ -238,11 +234,10 @@ select.form-control {
     background: rgba(102, 126, 234, 0.04);
 }
 
-/* Кнопки — ТОЧНО как в v1 */
 button {
     border: none;
     padding: 16px 24px;
-    border-radius: 20px; /* ТОЧНО как в v1 */
+    border-radius: 20px;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
@@ -322,10 +317,10 @@ button {
     width: 100%;
 }
 
-/* Карточки результатов — премиум в стиле v1 */
+/* Результаты — оригинальный стиль */
 .result-section {
     background: rgba(255, 255, 255, 0.95);
-    border-radius: 24px; /* ТОЧНО как в v1 */
+    border-radius: 24px;
     padding: 20px;
     margin-bottom: 16px;
     border: 1px solid rgba(255, 255, 255, 0.5);
@@ -350,7 +345,7 @@ button {
     padding-bottom: 12px;
     border-bottom: 2px solid rgba(102, 126, 234, 0.15);
     letter-spacing: -0.01em;
-    text-transform: uppercase;
+    text-transform: none; /* Убрал uppercase */
     display: flex;
     align-items: center;
     gap: 8px;
@@ -423,7 +418,6 @@ button {
     margin-bottom: 0;
 }
 
-/* Статусы */
 .warning {
     color: #dc2626 !important;
     font-weight: 800 !important;
@@ -452,7 +446,7 @@ button {
     font-weight: 500;
 }
 
-/* Блок оценки бюджета — в стиле v1 */
+/* Блок оценки — оригинальный стиль */
 .assessment-block {
     background: linear-gradient(135deg, #fafbff 0%, #f5f3ff 100%);
     border-left: 4px solid #667eea;
@@ -491,8 +485,8 @@ button {
     color: #64748b;
     font-size: 14px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
+    text-transform: none; /* Убрал uppercase */
+    letter-spacing: -0.01em;
 }
 
 .assessment-detail {
@@ -525,8 +519,8 @@ button {
     margin-bottom: 14px;
     color: #1e293b;
     font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
+    text-transform: none; /* Убрал uppercase */
+    letter-spacing: -0.01em;
 }
 
 .variant-row {
@@ -614,7 +608,7 @@ button {
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.04);
 }
 
-/* Кнопка "Хочу такой сайт" — в стиле v1 */
+/* Кнопка "Хочу такой сайт" — точь-в-точь как btn-primary */
 .btn-recommend {
     display: block;
     text-align: center;
@@ -625,7 +619,7 @@ button {
     text-decoration: none;
     font-weight: 800;
     text-transform: uppercase;
-    font-size: 14px;
+    font-size: 15px;
     margin-top: 16px;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     letter-spacing: 0.02em;
@@ -659,7 +653,12 @@ button {
     left: 100%;
 }
 
-/* Адаптивность */
+.btn-recommend:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 16px -4px rgba(102, 126, 234, 0.4);
+}
+
+/* Адаптивность — как в оригинале */
 @media (max-width: 480px) {
     body {
         padding: 12px;
