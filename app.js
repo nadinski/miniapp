@@ -46,6 +46,9 @@ const NICHE_CONFIG = {
     }
 };
 
+// ==================== КОНСТАНТА СТОИМОСТИ НАСТРОЙКИ РЕКЛАМЫ ====================
+const AD_SETUP_COST = 30000; // Фиксированная стоимость настройки рекламы (з/п рекламщику)
+
 // ==================== ТИПЫ РЕШЕНИЙ (цены +20% к верхней границе) ====================
 const SITE_OPTIONS = {
     subscription: {
@@ -320,7 +323,10 @@ function calculate() {
     
     const ordersNeeded = Math.ceil(revenue / averageOrder);
     const visitorsNeeded = Math.ceil(ordersNeeded / conversionRate);
-    const adBudget = Math.ceil(visitorsNeeded * cpc);
+    
+    // ВАЖНОЕ ИЗМЕНЕНИЕ: Добавляем стоимость настройки рекламы к месячному бюджету
+    const monthlyAdSpend = Math.ceil(visitorsNeeded * cpc);
+    const adBudget = monthlyAdSpend + AD_SETUP_COST; // Итоговый бюджет с учётом настройки
     
     const averageCtr = config.ctr / 100;
     const impressionsNeeded = Math.ceil(visitorsNeeded / averageCtr);
@@ -335,7 +341,7 @@ function calculate() {
     const recommendedKey = recommendSiteType(optimalReasonable, needEcommerce);
     const recommendedSite = SITE_OPTIONS[recommendedKey];
     
-    // Расчёт ROI
+    // Расчёт ROI (передаём полный adBudget с учётом настройки)
     const roi = calculateROI(recommendedSite.avgPrice, adBudget, revenue);
     
     // Альтернативы
@@ -353,6 +359,8 @@ function calculate() {
         visitorsNeeded,
         impressionsNeeded,
         adBudget,
+        monthlyAdSpend, // Добавляем отдельно для детализации
+        adSetupCost: AD_SETUP_COST,
         cpc,
         cpo,
         conversion: config.conversion,
@@ -452,6 +460,8 @@ function displayResults(data) {
 
 Рекламный бюджет:
 • Месячный бюджет: ${formatMoney(data.adBudget)} ₽
+• В т.ч. настройка рекламы: ${formatMoney(data.adSetupCost)} ₽
+• Рекламные расходы: ${formatMoney(data.monthlyAdSpend)} ₽
 • CPC: ${data.cpc} ₽
 • CPO: ${formatMoney(data.cpo)} ₽
 • Конверсия: ${data.conversion}%
@@ -470,12 +480,12 @@ function displayResults(data) {
 
         // Экранируем специальные символы для Markdown
         return message
-            .replace(/([*_`[\]()])/g, '\\$1')  // Экранируем спецсимволы
-            .replace(/•/g, '\\•');  // Экранируем маркеры списка
+            .replace(/([*_`[\]()])/g, '\\$1')
+            .replace(/•/g, '\\•');
     }
 
     // Формируем ссылку на Telegram
-    const telegramUsername = 'nadinski'; // ⚠️ ЗАМЕНИ НА СВОЙ TELEGRAM USERNAME
+    const telegramUsername = 'nadinski';
     const telegramMessage = generateTelegramMessage(data);
     const telegramUrl = `https://t.me/${telegramUsername}?text=${encodeURIComponent(telegramMessage)}`;
     
@@ -501,8 +511,16 @@ function displayResults(data) {
         <div class="result-section">
             <h3>💰 Рекламный бюджет (Яндекс.Директ)</h3>
             <div class="result-item highlight-blue">
-                <strong>Месячный бюджет:</strong>
+                <strong>Месячный бюджет ВСЕГО:</strong>
                 <span>${formatMoney(data.adBudget)} руб.</span>
+            </div>
+            <div class="result-item" style="font-size: 13px; color: #64748B; padding-left: 20px;">
+                <span>↳ Настройка рекламы (единоразово):</span>
+                <span>${formatMoney(data.adSetupCost)} руб.</span>
+            </div>
+            <div class="result-item" style="font-size: 13px; color: #64748B; padding-left: 20px;">
+                <span>↳ Бюджет на клики:</span>
+                <span>${formatMoney(data.monthlyAdSpend)} руб.</span>
             </div>
             <div class="result-item">
                 <strong>Средняя цена клика (CPC):</strong>
