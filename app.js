@@ -576,7 +576,7 @@ function displayResults(data) {
                     <span><strong>${netProfitDisplay} ₽/мес</strong></span>
                 </div>
                 
-                <a href="${telegramUrl}" target="_blank" class="btn-recommend">Хочу такой сайт →</a>
+                <a href="${telegramUrl}" target="_blank" class="btn-recommend">Хочу такой сайт</a>
             </div>
             ` : ''}
             
