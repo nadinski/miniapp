@@ -437,32 +437,32 @@ function displayResults(data) {
             ? 'не окупится' 
             : `${data.roi.paybackMonths} мес.`;
 
-        const message = `*Добрый день, Надежда! Мне нужен сайт.*
+        const message = `Добрый день, Надежда! Мне нужен сайт.
 
-*Исходные данные:*
+Исходные данные:
 • Желаемая выручка: ${formatMoney(data.revenue)} ₽/мес
 • Ниша: ${data.niche}
 • Средний чек: ${formatMoney(data.averageOrder)} ₽
 • Нужен интернет-магазин: ${data.needEcommerce ? 'Да' : 'Нет'}
 
-*Целевые показатели:*
+Целевые показатели:
 • Заказов в месяц: ${formatNumber(data.ordersNeeded)}
 • Посетителей: ${formatNumber(data.visitorsNeeded)}
 • Показов рекламы: ${formatNumber(data.impressionsNeeded)}
 
-*Рекламный бюджет:*
+Рекламный бюджет:
 • Месячный бюджет: ${formatMoney(data.adBudget)} ₽
 • CPC: ${data.cpc} ₽
 • CPO: ${formatMoney(data.cpo)} ₽
 • Конверсия: ${data.conversion}%
 
-*Разумный бюджет на сайт:*
+Разумный бюджет на сайт:
 • Оптимально: ${formatMoney(data.optimalReasonable)} ₽
 • Коридор: ${formatMoney(data.minReasonable)} – ${formatMoney(data.maxReasonable)} ₽
 • Чистая прибыль: ${netProfitDisplay} ₽/мес
 • Окупаемость: ${roiText}
 
-*Рекомендованное решение:*
+Рекомендованное решение:
 • ${data.recommendedSite.name}
 • Инвестиции: ${data.recommendedSite.isSubscription ? formatMoney(data.recommendedSite.avgPrice) + ' ₽/мес' : formatMoney(data.recommendedSite.minPrice) + ' – ' + formatMoney(data.recommendedSite.maxPrice) + ' ₽'}
 • Срок запуска: ${data.recommendedSite.timeToDevelop}
