@@ -396,7 +396,7 @@ function displayResults(data) {
                 <div class="variant-row">
                     <span class="variant-name">${site.name}</span>
                     <span class="variant-price">${formatMoney(site.minPrice)} – ${formatMoney(site.maxPrice)} ₽</span>
-                    <span class="variant-verdict">${site.avgPrice < data.recommendedSite.avgPrice ? '🟢 Эконом-вариант' : '🔴 Премиум-решение'}</span>
+                    <span class="variant-verdict">${site.avgPrice < data.recommendedSite.avgPrice ? '🟢 Эконом-вариант' : 'Премиум-решение'}</span>
                 </div>
             `).join('')}
         </div>
@@ -575,7 +575,7 @@ const telegramUrl = `https://t.me/${telegramUsername}?text=${telegramMessage}`;
                     <span><strong>${netProfitDisplay} ₽/мес</strong></span>
                 </div>
                 
-                `<a href="${telegramUrl}" target="_blank" class="btn-recommend">Хочу такой сайт →</a>`
+                <a href="${telegramUrl}" target="_blank" class="btn-recommend">Хочу такой сайт →</a>
             </div>
             ` : ''}
             
