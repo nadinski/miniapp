@@ -425,58 +425,59 @@ function displayResults(data) {
             </div>
         </div>
     ` : '';
-    // Внутри displayResults, перед `results.innerHTML = `
-// Функция для формирования сообщения в Telegram
-function generateTelegramMessage(data) {
-    const hasProfit = data.roi.monthlyNetProfit > 0;
-    const netProfitDisplay = hasProfit 
-        ? formatMoney(Math.floor(data.roi.monthlyNetProfit))
-        : `-${formatMoney(Math.abs(Math.floor(data.roi.monthlyNetProfit)))}`;
-    
-    const roiText = data.roi.paybackMonths === Infinity 
-        ? 'не окупится' 
-        : `${data.roi.paybackMonths} мес.`;
 
-    const message = `
-*Добрый день, Надежда! Мне нужен сайт.*
+    // ==================== ФОРМИРОВАНИЕ СООБЩЕНИЯ ДЛЯ TELEGRAM ====================
+    function generateTelegramMessage(data) {
+        const hasProfit = data.roi.monthlyNetProfit > 0;
+        const netProfitDisplay = hasProfit 
+            ? formatMoney(Math.floor(data.roi.monthlyNetProfit))
+            : `-${formatMoney(Math.abs(Math.floor(data.roi.monthlyNetProfit)))}`;
+        
+        const roiText = data.roi.paybackMonths === Infinity 
+            ? 'не окупится' 
+            : `${data.roi.paybackMonths} мес.`;
 
-📊 *Исходные данные:*
+        const message = `*Добрый день, Надежда! Мне нужен сайт.*
+
+*Исходные данные:*
 • Желаемая выручка: ${formatMoney(data.revenue)} ₽/мес
 • Ниша: ${data.niche}
 • Средний чек: ${formatMoney(data.averageOrder)} ₽
-• Нужен интернет-магазин: ${data.needEcommerce ? '✅ Да' : '❌ Нет'}
+• Нужен интернет-магазин: ${data.needEcommerce ? 'Да' : 'Нет'}
 
-🎯 *Целевые показатели:*
+*Целевые показатели:*
 • Заказов в месяц: ${formatNumber(data.ordersNeeded)}
 • Посетителей: ${formatNumber(data.visitorsNeeded)}
 • Показов рекламы: ${formatNumber(data.impressionsNeeded)}
 
-💰 *Рекламный бюджет:*
+*Рекламный бюджет:*
 • Месячный бюджет: ${formatMoney(data.adBudget)} ₽
 • CPC: ${data.cpc} ₽
 • CPO: ${formatMoney(data.cpo)} ₽
 • Конверсия: ${data.conversion}%
 
-🏦 *Разумный бюджет на сайт:*
+*Разумный бюджет на сайт:*
 • Оптимально: ${formatMoney(data.optimalReasonable)} ₽
 • Коридор: ${formatMoney(data.minReasonable)} – ${formatMoney(data.maxReasonable)} ₽
 • Чистая прибыль: ${netProfitDisplay} ₽/мес
 • Окупаемость: ${roiText}
 
-🏆 *Рекомендованное решение:*
+*Рекомендованное решение:*
 • ${data.recommendedSite.name}
 • Инвестиции: ${data.recommendedSite.isSubscription ? formatMoney(data.recommendedSite.avgPrice) + ' ₽/мес' : formatMoney(data.recommendedSite.minPrice) + ' – ' + formatMoney(data.recommendedSite.maxPrice) + ' ₽'}
 • Срок запуска: ${data.recommendedSite.timeToDevelop}
-• ${data.recommendedSite.description}
-`.trim();
+• ${data.recommendedSite.description}`;
 
-    return encodeURIComponent(message);
-}
+        // Экранируем специальные символы для Markdown
+        return message
+            .replace(/([*_`[\]()])/g, '\\$1')  // Экранируем спецсимволы
+            .replace(/•/g, '\\•');  // Экранируем маркеры списка
+    }
 
-// Формируем ссылку на Telegram (замени nadyaborse на свой username)
-const telegramUsername = 'nadinski'; // ⚠️ ЗАМЕНИ НА СВОЙ TELEGRAM USERNAME
-const telegramMessage = generateTelegramMessage(data);
-const telegramUrl = `https://t.me/${telegramUsername}?text=${telegramMessage}`;
+    // Формируем ссылку на Telegram
+    const telegramUsername = 'nadinski'; // ⚠️ ЗАМЕНИ НА СВОЙ TELEGRAM USERNAME
+    const telegramMessage = generateTelegramMessage(data);
+    const telegramUrl = `https://t.me/${telegramUsername}?text=${encodeURIComponent(telegramMessage)}`;
     
     results.innerHTML = `
         <!-- Блок 1: Целевые показатели -->
